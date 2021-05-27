@@ -167,6 +167,44 @@ end
     @test isapprox(symboliceval(ma, (:x, :x), test, SymbolicCache()), ex, atol = 1.0e-5)
 end
 
+@testset "Markov1" begin
+    m = Markov()
+    @transition m begin
+        up => down, 1.0
+        down => up, 100.0
+    end
+    @initial m begin
+        up, 1.0
+    end
+    @reward m begin
+        up, 1.0
+    end
+    initv, Q, rwd, = generate(m)
+    println(initv)
+    println(Q)
+    println(rwd)
+end
+
+# TODO
+# @testset "Markov2" begin
+#     @parameters lam1 lam2
+#     m = Markov(AbstractSymbolic{Float64})
+#     @transition m begin
+#         up => down, lam1
+#         down => up, lam2
+#     end
+#     @initial m begin
+#         up, @expr 1.0
+#     end
+#     @reward m begin
+#         up, @expr 1.0
+#     end
+#     initv, Q, rwd, = generate(m)
+#     println(initv)
+#     println(Q)
+#     println(rwd)
+# end
+
 # @testset "CTMCTran1" begin
 #     Q = @expr [
 #         -x x 0;

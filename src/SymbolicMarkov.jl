@@ -4,24 +4,18 @@ module SymbolicMarkov
 # export ctmctran
 # export ctmcst, CTMCST_CONFIG
 
-export gth
+#export gth
+export Markov, trans!, reward!, initial!, generate, @transition, @reward, @initial, @parameters
 
 # using SparseMatrix: AbstractSparseM, SparseCSR, SparseCSC, SparseCOO, BlockCOO
 # using NMarkov: gth, stgs, stsengs, @dot, AbstractTranspose, NoTrans, Trans, mexp
 using SymbolicDiff: AbstractSymbolic, SymbolicMatrix, SymbolicCSCMatrix, SymbolicEnv, SymbolicCache #, SymbolicExpression, AbstractSymbolicMatrix, AbstractSymbolicVector, SymbolicEnv, SymbolicCache, symboliceval
 import NMarkov: gth, stgs, stsengs
-import SymbolicDiff: _eval, symboliceval
+import SymbolicDiff: _eval, symboliceval, @expr, symbolic
+using SparseArrays: spzeros
+import Base
 
-# const SymbolicMarkovConfig = Dict{Symbol,Union{Int,Float64}}(
-#     :maxiter => 5000,
-#     :steps => 20,
-#     :reltol => 1.0e-6,
-#     :ufact => 1.01,
-#     :eps => 1.0e-8,
-#     :rmax => 500,
-# )
-
+include("_markov.jl")
 include("_ctmcst.jl")
-# include("_ctmctran.jl")
 
 end
