@@ -17,9 +17,20 @@ function trans!(m::Markov{Tv}, src::Symbol, dest::Symbol, tr::Tv) where Tv
     m.trans[(src,dest)] = tr
 end
 
+function trans!(m::Markov{Tv}, src::Symbol, dest::Symbol, tr::Tx) where {Tv,Tx}
+    push!(m.state, src)
+    push!(m.state, dest)
+    m.trans[(src,dest)] = convert(Tv, tr)
+end
+
 function reward!(m::Markov{Tv}, s::Symbol, r::Tv) where Tv
     push!(m.state, s)
     m.reward[s] = r
+end
+
+function reward!(m::Markov{Tv}, s::Symbol, r::Tx) where {Tv,Tx}
+    push!(m.state, s)
+    m.reward[s] = convert(Tv, r)
 end
 
 function reward!(m::Markov{Tv}, src::Symbol, dest::Symbol, r::Tv) where Tv
@@ -28,20 +39,21 @@ function reward!(m::Markov{Tv}, src::Symbol, dest::Symbol, r::Tv) where Tv
     m.ireward[(src,dest)] = r
 end
 
+function reward!(m::Markov{Tv}, src::Symbol, dest::Symbol, r::Tx) where {Tv,Tx}
+    push!(m.state, src)
+    push!(m.state, dest)
+    m.ireward[(src,dest)] = convert(Tv, r)
+end
+
 function initial!(m::Markov{Tv}, s::Symbol, p::Tv) where Tv
     push!(m.state, s)
     m.initial[s] = p
 end
 
-# TODO: modify the relation between sybmolic value and int/float/zero
-#
-# function Base.zero(::Type{AbstractSymbolic{Tv}}) where Tv
-#     @expr Tv(0)
-# end
-#
-# function Base.:-(x::Nothing, y::AbstractSymbolic{Tv}) where Tv
-#     -y
-# end
+function initial!(m::Markov{Tv}, s::Symbol, p::Tx) where {Tv,Tx}
+    push!(m.state, s)
+    m.initial[s] = convert(Tv, p)
+end
 
 function generate(m::Markov{Tv}) where Tv
     states = [x for x = m.state]

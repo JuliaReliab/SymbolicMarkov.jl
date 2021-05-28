@@ -27,7 +27,7 @@ end
         1 -2 1;
         0 1 -1]
     v = @expr [1, 0, 0]
-    csc = SymbolicCSCMatrix(Q)
+    csc = SparseCSC(Q)
     ma = stgs(csc)
     
     x = 2.0
@@ -63,7 +63,7 @@ end
         1 -2 1;
         0 1 -1]
     v = @expr [1, 0, 0]
-    csc = SymbolicCSCMatrix(Q)
+    csc = SparseCSC(Q)
     ma = stgs(csc)
     
     x = 2.0
@@ -90,7 +90,7 @@ end
         1 -2 1;
         0 1 -1]
     v = @expr [1, 0, 0]
-    csc = SymbolicCSCMatrix(Q)
+    csc = SparseCSC(Q)
     ma = dot(stgs(csc), v)
     
     x = 2.0
@@ -117,7 +117,7 @@ end
         1 -2 1;
         0 1 -1]
     v = @expr [1, 0, 0]
-    csc = SymbolicCSCMatrix(Q)
+    csc = SparseCSC(Q)
     ma = stgs(csc)
 
     x = 2.0
@@ -145,7 +145,7 @@ end
         1 -2 1;
         0 1 -1]
     v = @expr [1, 0, 0]
-    csc = SymbolicCSCMatrix(Q)
+    csc = SparseCSC(Q)
     ma = dot(stgs(csc), v)
 
     x = 2.0
@@ -185,25 +185,40 @@ end
     println(rwd)
 end
 
-# TODO
-# @testset "Markov2" begin
-#     @parameters lam1 lam2
-#     m = Markov(AbstractSymbolic{Float64})
-#     @transition m begin
-#         up => down, lam1
-#         down => up, lam2
-#     end
-#     @initial m begin
-#         up, @expr 1.0
-#     end
-#     @reward m begin
-#         up, @expr 1.0
-#     end
-#     initv, Q, rwd, = generate(m)
-#     println(initv)
-#     println(Q)
-#     println(rwd)
-# end
+@testset "Markov2" begin
+    @parameters lam1 lam2
+    m = Markov(AbstractSymbolic{Float64})
+    @transition m begin
+        up => down, lam1
+        down => up, lam2
+    end
+    @initial m begin
+        up, 1.0
+    end
+    @reward m begin
+        up, 1
+    end
+    initv, Q, rwd, = generate(m)
+    println(initv)
+    println(Q)
+    println(rwd)
+
+    avail = dot(stgs(Q), rwd)
+
+    @env test begin
+        lam1 = 1.0
+        lam2 = 100.0
+    end
+
+    a = symboliceval(avail, test, SymbolicCache())
+    println(a)
+    da1 = symboliceval(avail, :lam1, test, SymbolicCache())
+    println(da1)
+    da2 = symboliceval(avail, :lam2, test, SymbolicCache())
+    println(da2)
+    da12 = symboliceval(avail, (:lam1,:lam2), test, SymbolicCache())
+    println(da12)
+end
 
 # @testset "CTMCTran1" begin
 #     Q = @expr [
