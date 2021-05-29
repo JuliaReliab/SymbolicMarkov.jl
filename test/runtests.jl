@@ -220,148 +220,75 @@ end
     println(da12)
 end
 
-# @testset "CTMCTran1" begin
-#     Q = @expr [
-#         -x x 0;
-#         1 -1 0;
-#         0 1 -1
-#     ]
-#     Q = SymbolicCSCMatrix(Q)
-#     v = @expr [1, 0, 0]
-#     ma = ctmctran(Q, v, @expr(t))
+@testset "CTMCTran1" begin
+    Q = @expr [
+        -x x 0;
+        y -(y+z) z;
+        0 1 -1
+    ]
+    x = @expr [1.0, 0, 0]
+    r = @expr [1.0, 1, 0]
+    ma = tran(Q, x, r, LinRange(0, 1, 10))
     
-#     x = 2.0
-#     @env test begin
-#         x = x
-#         t = 1.0
-#     end
-#     result = symboliceval(ma, test, SymbolicCache())
-#     ex = exp(Matrix(symboliceval(Q, test, SymbolicCache())))' * [1,0,0]
-#     @test isapprox(ex, result)
-# end
+    x = 2.0
+    y = 1.0
+    z = 5.0
+    @env test begin
+        x = x
+        y = y
+        z = z
+    end
+    result = symboliceval(ma, test, SymbolicCache())
+    println(result)
+    # ex = exp(Matrix(symboliceval(Q, test, SymbolicCache())))' * [1,0,0]
+    # @test isapprox(ex, result)
+end
 
-# @testset "CTMCTran2" begin
-#     Q = @expr [
-#         -x x 0;
-#         1 -1 0;
-#         0 1 -1
-#     ]
-#     Q = SymbolicCSCMatrix(Q)
-#     v = @expr [1, 0, 0]
-#     ma = ctmctran(Q, v, @expr(t))
+@testset "CTMCTran2" begin
+    Q = @expr [
+        -x x 0;
+        y -(y+z) z;
+        0 1 -1
+    ]
+    x = @expr [1.0, 0, 0]
+    r = @expr [1.0, 1, 0]
+    ma = tran(Q, x, r, LinRange(0, 1, 10))
     
-#     x = 2.0
-#     @env test begin
-#         x = x
-#         t = 1.0
-#     end
+    x = 2.0
+    y = 1.0
+    z = 5.0
+    @env test begin
+        x = x
+        y = y
+        z = z
+    end
+    result = symboliceval(ma, :x, test, SymbolicCache())
+    println(result)
+    # ex = exp(Matrix(symboliceval(Q, test, SymbolicCache())))' * [1,0,0]
+    # @test isapprox(ex, result)
+end
 
-#     h = 0.0001
-#     @env test1 begin
-#         x = x + h
-#         t = 1.0
-#     end
-#     @env test2 begin
-#         x = x - h
-#         t = 1.0
-#     end
-#     result = symboliceval(ma, :x, test, SymbolicCache())
-#     ex = (symboliceval(ma, test1, SymbolicCache()) - symboliceval(ma, test2, SymbolicCache())) / (2*h)
-#     @test isapprox(ex, result)
-# end
-
-# @testset "CTMCTran3" begin
-#     Q = @expr [
-#         -x x 0;
-#         1 -1 0;
-#         0 1 -1
-#     ]
-#     Q = SymbolicCSCMatrix(Q)
-#     v = @expr [1, 0, 0]
-#     ma = ctmctran(Q, v, @expr(t))
+@testset "CTMCTran3" begin
+    Q = @expr [
+        -x x 0;
+        y -(y+z) z;
+        0 1 -1
+    ]
+    x = @expr [1.0, 0, 0]
+    r = @expr [1.0, 1, 0]
+    ma = tran(Q, x, r, LinRange(0, 1, 10))
     
-#     x = 2.0
-#     @env test begin
-#         x = x
-#         t = 1.0
-#     end
+    x = 2.0
+    y = 1.0
+    z = 5.0
+    @env test begin
+        x = x
+        y = y
+        z = z
+    end
+    result = symboliceval(ma, (:x,:y), test, SymbolicCache())
+    println(result)
+    # ex = exp(Matrix(symboliceval(Q, test, SymbolicCache())))' * [1,0,0]
+    # @test isapprox(ex, result)
+end
 
-#     h = 0.0001
-#     @env test1 begin
-#         x = x + h
-#         t = 1.0
-#     end
-#     @env test2 begin
-#         x = x - h
-#         t = 1.0
-#     end
-#     result = symboliceval(ma, (:x,:x), test, SymbolicCache())
-#     ex = (symboliceval(ma, test1, SymbolicCache()) - 2*symboliceval(ma, test, SymbolicCache()) + symboliceval(ma, test2, SymbolicCache())) / (h^2)
-#     @test isapprox(ex, result, atol=1.0e-5)
-# end
-
-# @testset "CTMCTran4" begin
-#     Q = @expr [
-#         -x x 0;
-#         1 -1 0;
-#         0 1 -1
-#     ]
-#     Q = SymbolicCSCMatrix(Q)
-#     v = @expr [1, 0, 0]
-#     r = @expr [0, x, 2]
-#     ma = dot(ctmctran(Q, v, @expr(t)), r)
-#     ma2 = ctmctran(Q, v, r, @expr(t))
-    
-#     x = 2.0
-#     @env test begin
-#         x = x
-#         t = 1.0
-#     end
-#     result = symboliceval(ma, test, SymbolicCache())
-#     ex = symboliceval(ma2, test, SymbolicCache())
-#     @test isapprox(ex, result)
-# end
-
-# @testset "CTMCTran5" begin
-#     Q = @expr [
-#         -x x 0;
-#         1 -1 0;
-#         0 1 -1
-#     ]
-#     Q = SymbolicCSCMatrix(Q)
-#     v = @expr [1, 0, 0]
-#     r = @expr [0, x, 2]
-#     ma = dot(ctmctran(Q, v, @expr(t)), r)
-#     ma2 = ctmctran(Q, v, r, @expr(t))
-    
-#     x = 2.0
-#     @env test begin
-#         x = x
-#         t = 1.0
-#     end
-#     result = symboliceval(ma, :x, test, SymbolicCache())
-#     ex = symboliceval(ma2, :x, test, SymbolicCache())
-#     @test isapprox(ex, result)
-# end
-
-# @testset "CTMCTran6" begin
-#     Q = @expr [
-#         -x x 0;
-#         1 -1 0;
-#         0 1 -1
-#     ]
-#     Q = SymbolicCSCMatrix(Q)
-#     v = @expr [1, 0, 0]
-#     r = @expr [0, x, 2]
-#     ma = dot(ctmctran(Q, v, @expr(t)), r)
-#     ma2 = ctmctran(Q, v, r, @expr(t))
-    
-#     x = 2.0
-#     @env test begin
-#         x = x
-#         t = 1.0
-#     end
-#     result = symboliceval(ma, (:x,:x), test, SymbolicCache())
-#     ex = symboliceval(ma2, (:x,:x), test, SymbolicCache())
-#     @test isapprox(ex, result)
-# end

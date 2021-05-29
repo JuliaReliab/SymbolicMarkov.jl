@@ -13,18 +13,38 @@ function Base.show(io::IO, x::SymbolicCTMCExpression{Tv}) where Tv
     Base.show(io, x.args)
 end
 
+"""
+getparams
+"""
+
+function _getparams(Q::Matrix{<:AbstractSymbolic{Tv}}) where Tv
+    union([x.params for x = Q]...)
+end
+
+function _getparams(Q::SparseCSC{<:AbstractSymbolic{Tv}}) where Tv
+    union([x.params for x = Q.val]...)
+end
+
+function _getparams(Q::SparseMatrixCSC{<:AbstractSymbolic{Tv}}) where Tv
+    union([x.params for x = Q.nzval]...)
+end
+
+"""
+gth, stgs
+"""
+
 function gth(Q::Matrix{<:AbstractSymbolic{Tv}}) where {Tv<:Number}
-    s = union([x.params for x = Q]...)
+    s = _getparams(Q)
     SymbolicCTMCExpression{Tv}(s, :gth, [Q], Dict{Symbol,Any}())
 end
 
 function stgs(Q::SparseCSC{<:AbstractSymbolic{Tv}}; maxiter=5000, steps=20, rtol::Tv=Tv(1.0e-6)) where {Tv<:Number}
-    s = union([x.params for x = Q.val]...)
+    s = _getparams(Q)
     SymbolicCTMCExpression{Tv}(s, :stgs, [Q], Dict{Symbol,Any}(:maxiter=>maxiter, :steps=>steps, :rtol=>rtol))
 end
 
 function stgs(Q::SparseMatrixCSC{<:AbstractSymbolic{Tv}}; maxiter=5000, steps=20, rtol::Tv=Tv(1.0e-6)) where {Tv<:Number}
-    s = union([x.params for x = Q.nzval]...)
+    s = _getparams(Q)
     SymbolicCTMCExpression{Tv}(s, :stgs, [Q], Dict{Symbol,Any}(:maxiter=>maxiter, :steps=>steps, :rtol=>rtol))
 end
 
