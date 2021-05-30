@@ -167,59 +167,6 @@ end
     @test isapprox(symboliceval(ma, (:x, :x), test, SymbolicCache()), ex, atol = 1.0e-5)
 end
 
-@testset "Markov1" begin
-    m = Markov()
-    @transition m begin
-        up => down, 1.0
-        down => up, 100.0
-    end
-    @initial m begin
-        up, 1.0
-    end
-    @reward m begin
-        up, 1.0
-    end
-    initv, Q, rwd, = generate(m)
-    println(initv)
-    println(Q)
-    println(rwd)
-end
-
-@testset "Markov2" begin
-    @parameters lam1 lam2
-    m = Markov(AbstractSymbolic{Float64})
-    @transition m begin
-        up => down, lam1
-        down => up, lam2
-    end
-    @initial m begin
-        up, 1.0
-    end
-    @reward m begin
-        up, 1
-    end
-    initv, Q, rwd, = generate(m)
-    println(initv)
-    println(Q)
-    println(rwd)
-
-    avail = dot(stgs(Q), rwd)
-
-    @env test begin
-        lam1 = 1.0
-        lam2 = 100.0
-    end
-
-    a = symboliceval(avail, test, SymbolicCache())
-    println(a)
-    da1 = symboliceval(avail, :lam1, test, SymbolicCache())
-    println(da1)
-    da2 = symboliceval(avail, :lam2, test, SymbolicCache())
-    println(da2)
-    da12 = symboliceval(avail, (:lam1,:lam2), test, SymbolicCache())
-    println(da12)
-end
-
 @testset "CTMCTran1" begin
     Q = @expr [
         -x x 0;
@@ -292,3 +239,187 @@ end
     # @test isapprox(ex, result)
 end
 
+@testset "Markov1" begin
+    m = Markov()
+    @tr m begin
+        up => down, 1.0
+        down => up, 100.0
+    end
+    @init m begin
+        up, 1.0
+    end
+    @reward m avail begin
+        up, 1.0
+    end
+    Q, initv, rwd, = generate(m)
+    println(initv)
+    println(Q)
+    println(rwd)
+end
+
+@testset "Markov2" begin
+    @parameters lam1 lam2
+    m = Markov()
+    @tr m begin
+        up => down, lam1
+        down => up, lam2
+    end
+    @init m begin
+        up, 1.0
+    end
+    @reward m avail begin
+        up, 1
+    end
+    Q, initv, rwd, = generate(m)
+    println(initv)
+    println(Q)
+    println(rwd)
+
+    avail = dot(stgs(Q), rwd[:avail])
+
+    @env test begin
+        lam1 = 1.0
+        lam2 = 100.0
+    end
+
+    a = symboliceval(avail, test, SymbolicCache())
+    println(a)
+    da1 = symboliceval(avail, :lam1, test, SymbolicCache())
+    println(da1)
+    da2 = symboliceval(avail, :lam2, test, SymbolicCache())
+    println(da2)
+    da12 = symboliceval(avail, (:lam1,:lam2), test, SymbolicCache())
+    println(da12)
+end
+
+@testset "Markov3" begin
+    @markov reliab(lam1, lam2) begin
+        @tr begin
+            up => down, lam1
+            down => up, lam2
+        end
+        @init begin
+            up, 1.0
+        end
+        @reward avail begin
+            up, 1
+        end
+    end
+
+    @parameters lam1 lam2
+    ctmc = reliab(lam1, lam2)
+    println(ctmc)
+
+    avail = exrss(ctmc, reward=:avail)
+
+    @env test begin
+        lam1 = 1.0
+        lam2 = 100.0
+    end
+
+    a = symboliceval(avail, test, SymbolicCache())
+    println(a)
+    da1 = symboliceval(avail, :lam1, test, SymbolicCache())
+    println(da1)
+    da2 = symboliceval(avail, :lam2, test, SymbolicCache())
+    println(da2)
+    da12 = symboliceval(avail, (:lam1,:lam2), test, SymbolicCache())
+    println(da12)
+end
+
+@testset "Markov4" begin
+    @markov reliab(lam1, lam2) begin
+        @tr up => down, lam1
+        @tr down => up, lam2
+        @init up, 1.0
+        @reward avail up, 1
+    end
+    ctmc = reliab(1, 100)
+    println(ctmc)
+
+    avail = exrss(ctmc, reward=:avail)
+    println(avail)
+end
+
+@testset "Markov5" begin
+    @markov reliab(lam1, lam2) begin
+        @tr up => down, lam1
+        @tr down => up, lam2
+        @init up, 1.0
+        @reward avail up, 1
+    end
+    ctmc = reliab(1, 100)
+    println(ctmc)
+
+    avail = exrss(ctmc, reward=:avail)
+    println(avail)
+    
+    tavail = exrt(LinRange(0, 1, 10), ctmc, reward=:avail)
+    println(tavail)
+end
+
+@testset "Markov6" begin
+    @markov reliab(lam1, lam2) begin
+        @tr up => down, lam1
+        @tr down => up, lam2
+        @init up, 1.0
+        @reward avail up, 1
+    end
+    ctmc = reliab(1, 100)
+    println(ctmc)
+
+    avail = exrss(ctmc, reward=:avail)
+    println(avail)
+    
+    tavail = cexrt(LinRange(0, 1, 10), ctmc, reward=:avail)
+    println(tavail)
+end
+
+@testset "Markov7" begin
+    @markov reliab(lam1, lam2) begin
+        @tr up => down, lam1
+        @tr down => up, lam2
+        @init up, 1.0
+        @reward avail up, 1
+    end
+    ctmc = reliab(1, 100)
+    println(ctmc)
+
+    avail = exrss(ctmc, reward=:avail)
+    println(avail)
+    
+    tavail = cexrt(0.5, ctmc, reward=:avail)
+    println(tavail)
+end
+
+@testset "Markov8" begin
+    @markov reliab(lam1, lam2) begin
+        @tr up => down, lam1
+        @tr down => up, lam2
+        @init up, 1.0
+        @reward avail up, 1
+    end
+    @parameters lam1 lam2
+    ctmc = reliab(lam1, lam2)
+    println(ctmc)
+
+    avail = exrss(ctmc, reward=:avail)
+    println(avail)
+    
+    tavail = exrt(LinRange(0, 1, 10), ctmc, reward=:avail)
+    println(tavail)
+    
+    @env test begin
+        lam1 = 1.0
+        lam2 = 100.0
+    end
+
+    a = symboliceval(tavail, test, SymbolicCache())
+    println(a)
+    da1 = symboliceval(tavail, :lam1, test, SymbolicCache())
+    println(da1)
+    da2 = symboliceval(tavail, :lam2, test, SymbolicCache())
+    println(da2)
+    da12 = symboliceval(tavail, (:lam1,:lam2), test, SymbolicCache())
+    println(da12)
+end

@@ -3,9 +3,9 @@ Transient Markov
 """
 
 function tran(Q::AbstractMatrix{<:AbstractSymbolic{Tv}}, x::AbstractVector{<:AbstractSymbolic{Tv}}, r::AbstractVector{<:AbstractSymbolic{Tv}}, ts::AbstractVector{Tv};
-    forward::Symbol=:T, ufact::Tv=1.01, eps::Tv=1.0e-8, rmax=500) where {Tv<:Number}
+    forward::Symbol=:T, ufact::Tv=1.01, eps::Tv=1.0e-8, rmax=500, cumulative=false) where {Tv<:Number}
     s = _getparams(Q)
-    SymbolicCTMCExpression{Tv}(s, :tran, [Q,x,r], Dict{Symbol,Any}(:ts=>ts, :forward=>forward, :ufact=>ufact, :eps=>eps, :rmax=>rmax))
+    SymbolicCTMCExpression{Tv}(s, :tran, [Q,x,r], Dict{Symbol,Any}(:ts=>ts, :forward=>forward, :ufact=>ufact, :eps=>eps, :rmax=>rmax, :cumulative=>cumulative))
 end
 
 """
@@ -19,7 +19,11 @@ function _eval(::Val{:tran}, f::SymbolicCTMCExpression{Tv}, env::SymbolicEnv, ca
     r = symboliceval(f.args[3], env, cache)
     ts = f.options[:ts]
     result, cresult, = tran(Q, x, r, ts, forward=f.options[:forward], ufact=f.options[:ufact], eps=f.options[:eps], rmax=f.options[:rmax])
-    (result, cresult)
+    if f.options[:cumulative]
+        cresult
+    else
+        result
+    end
 end
 
 # """
@@ -49,7 +53,11 @@ function _eval(::Val{:tran}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, env::S
         cresult .+= ctmp
     end
 
-    (result, cresult)
+    if f.options[:cumulative]
+        cresult
+    else
+        result
+    end
 end
 
 # """
@@ -105,7 +113,11 @@ function _eval(::Val{:tran}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,S
         cresult .+= ctmp
     end
 
-    (result, cresult)
+    if f.options[:cumulative]
+        cresult
+    else
+        result
+    end
 end
 
 # function _eval(::Val{:ctmctran}, f::SymbolicExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv

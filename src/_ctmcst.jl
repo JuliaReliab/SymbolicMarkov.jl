@@ -9,6 +9,19 @@ struct SymbolicCTMCExpression{Tv} <: AbstractSymbolic{Tv}
     options::Dict{Symbol,Any}
 end
 
+function _toexpr(x::SymbolicCTMCExpression)
+    args = [_toexpr(e) for e = x.args]
+    Expr(:call, x.op, args...)
+end
+
+function _toexpr(x::AbstractVector)
+    Expr(:vect, [_toexpr(e) for e = x]...)
+end
+
+function _toexpr(x::AbstractMatrix)
+    Expr(:vect, [_toexpr(e) for e = x]...)
+end
+
 function Base.show(io::IO, x::SymbolicCTMCExpression{Tv}) where Tv
     Base.show(io, x.args)
 end

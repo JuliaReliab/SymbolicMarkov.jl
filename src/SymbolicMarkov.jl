@@ -5,7 +5,8 @@ module SymbolicMarkov
 # export ctmcst, CTMCST_CONFIG
 
 #export gth
-export Markov, trans!, reward!, initial!, generate, @transition, @reward, @initial, @parameters
+export Markov, trans!, reward!, initial!, generate, @tr, @reward, @init, @parameters, @markov
+export CTMCModel, exrss, exrt, cexrt
 
 using SymbolicDiff: AbstractSymbolic, SymbolicEnv, SymbolicCache, SymbolicExpression
 import NMarkov: gth, stgs, stsengs, tran
@@ -17,6 +18,7 @@ import LinearAlgebra: dot
 
 
 include("_markov.jl")
+include("_ctmc.jl")
 include("_ctmcst.jl")
 include("_ctmctran.jl")
 
