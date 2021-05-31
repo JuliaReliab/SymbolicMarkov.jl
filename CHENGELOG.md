@@ -1,3 +1,7 @@
+# 0.4.1
+
+- Bug fix: fix a bug for sensitivity for transient analysis (Do not use the earlier versions)
+
 # 0.4.0
 
 - Add macro; tr, init, reward, markov

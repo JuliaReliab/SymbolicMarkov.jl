@@ -1,7 +1,7 @@
 name = "SymbolicMarkov"
 uuid = "29f2b557-c746-4a93-aecc-96f24fec2756"
 authors = ["Hiroyuki Okamura"]
-version = "0.4.0"
+version = "0.4.1"
 
 [deps]
 Deformula = "92955551-dcbb-4ab3-ac34-b1f61f738b48"
