@@ -135,7 +135,6 @@ function _geninitial(x::Any, m)
 end
 
 function _geninitial(x::Expr, m)
-    println(x)
     if Meta.isexpr(x, :tuple) && length(x.args) == 2
         s = x.args[1]
         p = x.args[2]
