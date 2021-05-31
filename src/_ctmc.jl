@@ -9,8 +9,13 @@ struct CTMCModel{Tv}
     states::Vector{Symbol}
 end
 
-function CTMCModel(Q::AbstractMatrix{Tv}, initv::Vector{Tv}, r::Dict{Symbol,Vector{Tv}}, states::Vector{Symbol}) where Tv
+function ctmc(Q::AbstractMatrix{Tv}, initv::Vector{Tv}, r::Dict{Symbol,Vector{Tv}}, states::Vector{Symbol}) where Tv
     CTMCModel{Tv}(Q, initv, r, states)
+end
+
+function ctmc(m::Markov)
+    Q, initv, r, states = generate(m, modeltype=:CTMC)
+    ctmc(Q, initv, r, states)
 end
 
 """

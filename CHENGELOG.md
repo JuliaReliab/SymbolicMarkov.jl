@@ -1,3 +1,7 @@
+# 0.5.0
+
+- Change inteface for macro @markov
+
 # 0.4.1
 
 - Bug fix: fix a bug for sensitivity for transient analysis (Do not use the earlier versions)

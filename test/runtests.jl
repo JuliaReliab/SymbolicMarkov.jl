@@ -307,10 +307,11 @@ end
     end
 
     @parameters lam1 lam2
-    ctmc = reliab(lam1, lam2)
+    m = reliab(lam1, lam2)
     println(ctmc)
 
-    avail = exrss(ctmc, reward=:avail)
+    model = ctmc(m)
+    avail = exrss(model, reward=:avail)
 
     @env test begin
         lam1 = 1.0
@@ -334,10 +335,10 @@ end
         @init up, 1.0
         @reward avail up, 1
     end
-    ctmc = reliab(1, 100)
-    println(ctmc)
+    m = reliab(1, 100)
+    println(m)
 
-    avail = exrss(ctmc, reward=:avail)
+    avail = exrss(ctmc(m), reward=:avail)
     println(avail)
 end
 
@@ -348,13 +349,13 @@ end
         @init up, 1.0
         @reward avail up, 1
     end
-    ctmc = reliab(1, 100)
-    println(ctmc)
+    m = reliab(1, 100)
+    println(m)
 
-    avail = exrss(ctmc, reward=:avail)
+    avail = exrss(ctmc(m), reward=:avail)
     println(avail)
     
-    tavail = exrt(LinRange(0, 1, 10), ctmc, reward=:avail)
+    tavail = exrt(LinRange(0, 1, 10), ctmc(m), reward=:avail)
     println(tavail)
 end
 
@@ -365,13 +366,13 @@ end
         @init up, 1.0
         @reward avail up, 1
     end
-    ctmc = reliab(1, 100)
-    println(ctmc)
+    m = reliab(1, 100)
+    println(m)
 
-    avail = exrss(ctmc, reward=:avail)
+    avail = exrss(ctmc(m), reward=:avail)
     println(avail)
     
-    tavail = cexrt(LinRange(0, 1, 10), ctmc, reward=:avail)
+    tavail = cexrt(LinRange(0, 1, 10), ctmc(m), reward=:avail)
     println(tavail)
 end
 
@@ -382,13 +383,13 @@ end
         @init up, 1.0
         @reward avail up, 1
     end
-    ctmc = reliab(1, 100)
-    println(ctmc)
+    m = reliab(1, 100)
+    println(m)
 
-    avail = exrss(ctmc, reward=:avail)
+    avail = exrss(ctmc(m), reward=:avail)
     println(avail)
     
-    tavail = cexrt(0.5, ctmc, reward=:avail)
+    tavail = cexrt(0.5, ctmc(m), reward=:avail)
     println(tavail)
 end
 
@@ -400,13 +401,13 @@ end
         @reward avail up, 1
     end
     @parameters lam1 lam2
-    ctmc = reliab(lam1, lam2)
-    println(ctmc)
+    m = reliab(lam1, lam2)
+    println(m)
 
-    avail = exrss(ctmc, reward=:avail)
+    avail = exrss(ctmc(m), reward=:avail)
     println(avail)
     
-    tavail = exrt(LinRange(0, 1, 10), ctmc, reward=:avail)
+    tavail = exrt(LinRange(0, 1, 10), ctmc(m), reward=:avail)
     println(tavail)
     
     @env test begin

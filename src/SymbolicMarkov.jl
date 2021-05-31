@@ -6,7 +6,7 @@ module SymbolicMarkov
 
 #export gth
 export Markov, trans!, reward!, initial!, generate, @tr, @reward, @init, @parameters, @markov
-export CTMCModel, exrss, exrt, cexrt
+export CTMCModel, ctmc, exrss, exrt, cexrt
 
 using SymbolicDiff: AbstractSymbolic, SymbolicEnv, SymbolicCache, SymbolicExpression
 import NMarkov: gth, stgs, stsengs, tran

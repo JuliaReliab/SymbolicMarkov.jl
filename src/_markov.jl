@@ -64,7 +64,11 @@ function initial!(m::Markov, s::Symbol, p)
     m.initial[s] = p
 end
 
-function generate(m::Markov)
+function generate(m; modeltype::Symbol = :CTMC)
+    _generate(Val(modeltype), m)
+end
+
+function _generate(::Val{:CTMC}, m::Markov)
     states = [x for x = m.state]
     index = Dict([states[i] => i for i = 1:length(states)]...)
     Q = spzeros(m.Tv, length(states), length(states))
@@ -178,7 +182,7 @@ macro markov(f, block)
             push!(body, _replace_macro(x))
         end
     end
-    push!(body, Expr(:call, :CTMCModel, Expr(:..., Expr(:call, generate, :tmp))))
+    push!(body, :tmp)
     esc(Expr(:function, f, Expr(:block, body...)))
 end
 
