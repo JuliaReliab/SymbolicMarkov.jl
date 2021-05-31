@@ -424,3 +424,19 @@ end
     da12 = symboliceval(tavail, (:lam1,:lam2), test, SymbolicCache())
     println(da12)
 end
+
+@testset "Markov9" begin
+    e = @macroexpand @markov mm1k(lam,mu,k) begin
+        for i = 0:k-1
+            @tr $(Symbol(i)) => $(Symbol(i+1)), lam
+        end
+        for i = 1:k
+            @tr $(Symbol(i)) => $(Symbol(i-1)), mu
+        end
+        @init $(Symbol(0)), 1.0
+        for i = 0:k
+            @reward len $(Symbol(i)), i
+        end
+    end
+    println(e)
+end

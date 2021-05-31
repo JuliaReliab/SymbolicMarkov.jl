@@ -135,7 +135,8 @@ function _geninitial(x::Any, m)
 end
 
 function _geninitial(x::Expr, m)
-    if Meta.isexpr(x, :tuple) && typeof(x.args[1]) == Symbol && length(x.args) == 2
+    println(x)
+    if Meta.isexpr(x, :tuple) && length(x.args) == 2
         s = x.args[1]
         p = x.args[2]
         :(initial!($m, $(Expr(:quote, s)), $p))
@@ -158,7 +159,7 @@ function _genreward(x::Any, label, m)
 end
 
 function _genreward(x::Expr, label::Symbol, m)
-    if Meta.isexpr(x, :tuple) && typeof(x.args[1]) == Symbol && length(x.args) == 2
+    if Meta.isexpr(x, :tuple) && length(x.args) == 2
         s = x.args[1]
         r = x.args[2]
         :(reward!($m, $(Expr(:quote, label)), $(Expr(:quote, s)), $r))

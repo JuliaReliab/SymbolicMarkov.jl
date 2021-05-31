@@ -1,3 +1,7 @@
+# 0.5.1
+
+- Bug fix: init and reward in markov macro
+
 # 0.5.0
 
 - Change inteface for macro @markov
