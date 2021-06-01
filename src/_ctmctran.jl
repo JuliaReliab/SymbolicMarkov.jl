@@ -9,14 +9,14 @@ function tran(Q::AbstractMatrix{<:AbstractSymbolic{Tv}}, x::AbstractVector{<:Abs
 end
 
 """
-symboliceval(f, env, cache)
+seval(f, env, cache)
 Return the value for expr f
 """
 
 function _eval(::Val{:tran}, f::SymbolicCTMCExpression{Tv}, env::SymbolicEnv, cache::SymbolicCache) where Tv
-    Q = symboliceval(f.args[1], env, cache)
-    x = symboliceval(f.args[2], env, cache)
-    r = symboliceval(f.args[3], env, cache)
+    Q = seval(f.args[1], env, cache)
+    x = seval(f.args[2], env, cache)
+    r = seval(f.args[3], env, cache)
     ts = f.options[:ts]
     result, cresult, = tran(Q, x, r, ts, forward=f.options[:forward], ufact=f.options[:ufact], eps=f.options[:eps], rmax=f.options[:rmax])
     if f.options[:cumulative]
@@ -27,17 +27,17 @@ function _eval(::Val{:tran}, f::SymbolicCTMCExpression{Tv}, env::SymbolicEnv, ca
 end
 
 # """
-# symboliceval(f, dvar, env, cache)
+# seval(f, dvar, env, cache)
 # Return the first derivative of expr f
 # """
 
 function _eval(::Val{:tran}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache) where Tv
-    Q = symboliceval(f.args[1], env, cache)
-    x = symboliceval(f.args[2], env, cache)
-    r = symboliceval(f.args[3], env, cache)
-    dQ = symboliceval(f.args[1], dvar, env, cache)
-    dx = symboliceval(f.args[2], dvar, env, cache)
-    dr = symboliceval(f.args[3], dvar, env, cache)
+    Q = seval(f.args[1], env, cache)
+    x = seval(f.args[2], env, cache)
+    r = seval(f.args[3], env, cache)
+    dQ = seval(f.args[1], dvar, env, cache)
+    dx = seval(f.args[2], dvar, env, cache)
+    dr = seval(f.args[3], dvar, env, cache)
     ts = f.options[:ts]
 
     n = length(x)
@@ -55,26 +55,26 @@ function _eval(::Val{:tran}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, env::S
 end
 
 # """
-# symboliceval(f, dvar, env, cache)
+# seval(f, dvar, env, cache)
 # Return the second derivative of expr f
 # """
 
 function _eval(::Val{:tran}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache) where Tv
-    Q = symboliceval(f.args[1], env, cache)
-    x = symboliceval(f.args[2], env, cache)
-    r = symboliceval(f.args[3], env, cache)
+    Q = seval(f.args[1], env, cache)
+    x = seval(f.args[2], env, cache)
+    r = seval(f.args[3], env, cache)
 
-    dQ_a = symboliceval(f.args[1], dvar[1], env, cache)
-    dx_a = symboliceval(f.args[2], dvar[1], env, cache)
-    dr_a = symboliceval(f.args[3], dvar[1], env, cache)
+    dQ_a = seval(f.args[1], dvar[1], env, cache)
+    dx_a = seval(f.args[2], dvar[1], env, cache)
+    dr_a = seval(f.args[3], dvar[1], env, cache)
 
-    dQ_b = symboliceval(f.args[1], dvar[2], env, cache)
-    dx_b = symboliceval(f.args[2], dvar[2], env, cache)
-    dr_b = symboliceval(f.args[3], dvar[2], env, cache)
+    dQ_b = seval(f.args[1], dvar[2], env, cache)
+    dx_b = seval(f.args[2], dvar[2], env, cache)
+    dr_b = seval(f.args[3], dvar[2], env, cache)
 
-    dQ_ab = symboliceval(f.args[1], dvar, env, cache)
-    dx_ab = symboliceval(f.args[2], dvar, env, cache)
-    dr_ab = symboliceval(f.args[3], dvar, env, cache)
+    dQ_ab = seval(f.args[1], dvar, env, cache)
+    dx_ab = seval(f.args[2], dvar, env, cache)
+    dr_ab = seval(f.args[3], dvar, env, cache)
     ts = f.options[:ts]
 
     n = length(x)

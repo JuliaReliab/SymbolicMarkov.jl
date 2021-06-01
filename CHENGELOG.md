@@ -1,3 +1,7 @@
+# 0.6.0
+
+- Change macro style
+
 # 0.5.1
 
 - Bug fix: init and reward in markov macro

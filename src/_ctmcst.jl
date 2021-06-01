@@ -72,17 +72,17 @@ function dot(x::SymbolicCTMCExpression{Tx}, y::Vector{<:AbstractSymbolic{Ty}}) w
 end
 
 """
-symboliceval(f, env, cache)
+seval(f, env, cache)
 Return the value for expr f
 """
 
 function _eval(::Val{:gth}, f::SymbolicCTMCExpression{Tv}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
-    Q = symboliceval(f.args[1], env, cache)
+    Q = seval(f.args[1], env, cache)
     gth(Q)
 end
 
 function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
-    Q = symboliceval(f.args[1], env, cache)
+    Q = seval(f.args[1], env, cache)
     x, conv, iter, rerror = stgs(Q, maxiter=f.options[:maxiter], steps=f.options[:steps], rtol=f.options[:rtol])
     if conv == false
         @warn "GS did not converge", iter, rerror
@@ -91,14 +91,14 @@ function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, env::SymbolicEnv, ca
 end
 
 """
-symboliceval(f, dvar, env, cache)
+seval(f, dvar, env, cache)
 Return the first derivative of expr f
 """
 
 function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
-    pis = symboliceval(f, env, cache)
-    Q = symboliceval(f.args[1], env, cache)
-    dQ = symboliceval(f.args[1], dvar, env, cache)
+    pis = seval(f, env, cache)
+    Q = seval(f.args[1], env, cache)
+    dQ = seval(f.args[1], dvar, env, cache)
     s, conv, iter, rerror = stsengs(Q, pis, dQ' * pis, maxiter=f.options[:maxiter], steps=f.options[:steps], rtol=f.options[:rtol])
     if conv == false
         @warn "GSsen did not converge", iter, rerror
@@ -107,19 +107,19 @@ function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, env::S
 end
 
 """
-symboliceval(f, dvar, env, cache)
+seval(f, dvar, env, cache)
 Return the second derivative of expr f
 """
 
 function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
-    pis = symboliceval(f, env, cache)
-    dpis_a = symboliceval(f, dvar[1], env, cache)
-    dpis_b = symboliceval(f, dvar[1], env, cache)
+    pis = seval(f, env, cache)
+    dpis_a = seval(f, dvar[1], env, cache)
+    dpis_b = seval(f, dvar[1], env, cache)
 
-    Q = symboliceval(f.args[1], env, cache)
-    dQ_a = symboliceval(f.args[1], dvar[1], env, cache)
-    dQ_b = symboliceval(f.args[1], dvar[2], env, cache)
-    dQ_ab = symboliceval(f.args[1], dvar, env, cache)
+    Q = seval(f.args[1], env, cache)
+    dQ_a = seval(f.args[1], dvar[1], env, cache)
+    dQ_b = seval(f.args[1], dvar[2], env, cache)
+    dQ_ab = seval(f.args[1], dvar, env, cache)
 
     s, conv, iter, rerror = stsengs(Q, pis, dQ_ab' * pis + dQ_a' * dpis_b + dQ_b' * dpis_a, maxiter=f.options[:maxiter], steps=f.options[:steps], rtol=f.options[:rtol])
     if conv == false
@@ -129,10 +129,10 @@ function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,S
 end
 
 # function _eval(::Val{:ctmcst}, f::SymbolicExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
-#     Q = symboliceval(f.args[1], env, cache)
-#     dQ_a = symboliceval(f.args[1], dvar[1], env, cache)
-#     dQ_b = symboliceval(f.args[1], dvar[2], env, cache)
-#     dQ_ab = symboliceval(f.args[1], dvar, env, cache)
+#     Q = seval(f.args[1], env, cache)
+#     dQ_a = seval(f.args[1], dvar[1], env, cache)
+#     dQ_b = seval(f.args[1], dvar[2], env, cache)
+#     dQ_ab = seval(f.args[1], dvar, env, cache)
 
 #     pis = _stsolve(Q)
 #     dpis_a = _stsensolve(Q, pis, dQ_a' * pis)
@@ -142,14 +142,14 @@ end
 # end
 
 # function _eval(::Val{:ctmcst2}, f::SymbolicExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Tv where Tv
-#     Q = symboliceval(f.args[1], env, cache)
-#     dQ_a = symboliceval(f.args[1], dvar[1], env, cache)
-#     dQ_b = symboliceval(f.args[1], dvar[2], env, cache)
-#     dQ_ab = symboliceval(f.args[1], dvar, env, cache)
-#     r = symboliceval(f.args[2], env, cache)
-#     dr_a = symboliceval(f.args[2], dvar[1], env, cache)
-#     dr_b = symboliceval(f.args[2], dvar[2], env, cache)
-#     dr_ab = symboliceval(f.args[2], dvar, env, cache)
+#     Q = seval(f.args[1], env, cache)
+#     dQ_a = seval(f.args[1], dvar[1], env, cache)
+#     dQ_b = seval(f.args[1], dvar[2], env, cache)
+#     dQ_ab = seval(f.args[1], dvar, env, cache)
+#     r = seval(f.args[2], env, cache)
+#     dr_a = seval(f.args[2], dvar[1], env, cache)
+#     dr_b = seval(f.args[2], dvar[2], env, cache)
+#     dr_ab = seval(f.args[2], dvar, env, cache)
 
 #     pis = _stsolve(Q)
 #     dpis_a = _stsensolve(Q, pis, dQ_a' * pis)

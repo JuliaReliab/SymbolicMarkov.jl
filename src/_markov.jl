@@ -48,7 +48,7 @@ function reward!(m::Markov, label::Symbol, s::Symbol, r)
     d[s] = r
 end
 
-function reward!(m::Markov, label::Symbol, src::Symbol, dest::Symbol, r)
+function reward!(m::Markov, label, src, dest, r)
     push!(m.state, src)
     push!(m.state, dest)
     d = get(m.ireward, label) do
@@ -91,12 +91,6 @@ function _generate(::Val{:CTMC}, m::Markov)
     Q, initv, rwd, states
 end
 
-macro parameters(params...)
-    body = [Expr(:(=), esc(x), esc(Expr(:call, :symbolic, Expr(:quote, x)))) for x = params]
-    push!(body, Expr(:tuple, [esc(x) for x = params]...))
-    Expr(:block, body...)
-end
-
 macro tr(m, block)
     if Meta.isexpr(block, :block)
         body = [_gentrans(x, m) for x = block.args]
@@ -115,7 +109,7 @@ function _gentrans(x::Expr, m)
         src = x.args[1].args[2]
         dest = x.args[1].args[3]
         t = x.args[2]
-        :(trans!($m, $(Expr(:quote, src)), $(Expr(:quote, dest)), $t))
+        :(trans!($m, $src, $dest, $t))
     else
         throw(TypeError(x, "Invalid format for the transition"))
     end
@@ -138,7 +132,7 @@ function _geninitial(x::Expr, m)
     if Meta.isexpr(x, :tuple) && length(x.args) == 2
         s = x.args[1]
         p = x.args[2]
-        :(initial!($m, $(Expr(:quote, s)), $p))
+        :(initial!($m, $s, $p))
     else
         throw(TypeError(x, "Invalid format for the initial probability"))
     end
@@ -157,16 +151,16 @@ function _genreward(x::Any, label, m)
     x
 end
 
-function _genreward(x::Expr, label::Symbol, m)
+function _genreward(x::Expr, label, m)
     if Meta.isexpr(x, :tuple) && length(x.args) == 2
         s = x.args[1]
         r = x.args[2]
-        :(reward!($m, $(Expr(:quote, label)), $(Expr(:quote, s)), $r))
+        :(reward!($m, $label, $s, $r))
     elseif Meta.isexpr(x, :tuple) && Meta.isexpr(x.args[1], :call) && x.args[1].args[1] == :(=>) && length(x.args) == 2
         src = x.args[1].args[2]
         dest = x.args[1].args[3]
         r = x.args[2]
-        :(reward!($m, $(Expr(:quote, label)), $(Expr(:quote, src)), $(Expr(:quote, dest)), $r))
+        :(reward!($m, $label, $src, $dest, $r))
     else
         throw(TypeError(x, "Invalid format for the reward vector"))
     end
