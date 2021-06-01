@@ -5,12 +5,12 @@ module SymbolicMarkov
 # export ctmcst, CTMCST_CONFIG
 
 #export gth
-export Markov, trans!, reward!, initial!, generate, @tr, @reward, @init, @parameters, @markov
+export Markov, trans!, reward!, initial!, generate, @tr, @reward, @init, @markov
 export CTMCModel, ctmc, exrss, exrt, cexrt
 
-using SymbolicDiff: AbstractSymbolic, SymbolicEnv, SymbolicCache, SymbolicExpression
+using SymbolicDiff: AbstractSymbolic, SymbolicCache, SymbolicExpression
 import NMarkov: gth, stgs, stsengs, tran
-import SymbolicDiff: _toexpr, _eval, symboliceval, @expr, symbolic
+import SymbolicDiff: _toexpr, _eval, symeval, @expr, symbolic
 using SparseArrays: SparseMatrixCSC, spzeros
 using SparseMatrix: SparseCSC, BlockCOO
 import Base

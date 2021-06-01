@@ -1,3 +1,8 @@
+# 0.6.0
+
+- Change interface
+- Modify for SymbolicDiff 0.8.0
+
 # 0.5.1
 
 - Bug fix: init and reward in markov macro

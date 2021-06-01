@@ -72,17 +72,17 @@ function dot(x::SymbolicCTMCExpression{Tx}, y::Vector{<:AbstractSymbolic{Ty}}) w
 end
 
 """
-symboliceval(f, env, cache)
+symeval(f, cache)
 Return the value for expr f
 """
 
-function _eval(::Val{:gth}, f::SymbolicCTMCExpression{Tv}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
-    Q = symboliceval(f.args[1], env, cache)
+function _eval(::Val{:gth}, f::SymbolicCTMCExpression{Tv}, cache::SymbolicCache)::Vector{Tv} where Tv
+    Q = symeval(f.args[1], cache)
     gth(Q)
 end
 
-function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
-    Q = symboliceval(f.args[1], env, cache)
+function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, cache::SymbolicCache)::Vector{Tv} where Tv
+    Q = symeval(f.args[1], cache)
     x, conv, iter, rerror = stgs(Q, maxiter=f.options[:maxiter], steps=f.options[:steps], rtol=f.options[:rtol])
     if conv == false
         @warn "GS did not converge", iter, rerror
@@ -91,14 +91,14 @@ function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, env::SymbolicEnv, ca
 end
 
 """
-symboliceval(f, dvar, env, cache)
+symeval(f, dvar, cache)
 Return the first derivative of expr f
 """
 
-function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
-    pis = symboliceval(f, env, cache)
-    Q = symboliceval(f.args[1], env, cache)
-    dQ = symboliceval(f.args[1], dvar, env, cache)
+function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, cache::SymbolicCache)::Vector{Tv} where Tv
+    pis = symeval(f, cache)
+    Q = symeval(f.args[1], cache)
+    dQ = symeval(f.args[1], dvar, cache)
     s, conv, iter, rerror = stsengs(Q, pis, dQ' * pis, maxiter=f.options[:maxiter], steps=f.options[:steps], rtol=f.options[:rtol])
     if conv == false
         @warn "GSsen did not converge", iter, rerror
@@ -107,19 +107,19 @@ function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, env::S
 end
 
 """
-symboliceval(f, dvar, env, cache)
+symeval(f, dvar, cache)
 Return the second derivative of expr f
 """
 
-function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
-    pis = symboliceval(f, env, cache)
-    dpis_a = symboliceval(f, dvar[1], env, cache)
-    dpis_b = symboliceval(f, dvar[1], env, cache)
+function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,Symbol}, cache::SymbolicCache)::Vector{Tv} where Tv
+    pis = symeval(f, cache)
+    dpis_a = symeval(f, dvar[1], cache)
+    dpis_b = symeval(f, dvar[1], cache)
 
-    Q = symboliceval(f.args[1], env, cache)
-    dQ_a = symboliceval(f.args[1], dvar[1], env, cache)
-    dQ_b = symboliceval(f.args[1], dvar[2], env, cache)
-    dQ_ab = symboliceval(f.args[1], dvar, env, cache)
+    Q = symeval(f.args[1], cache)
+    dQ_a = symeval(f.args[1], dvar[1], cache)
+    dQ_b = symeval(f.args[1], dvar[2], cache)
+    dQ_ab = symeval(f.args[1], dvar, cache)
 
     s, conv, iter, rerror = stsengs(Q, pis, dQ_ab' * pis + dQ_a' * dpis_b + dQ_b' * dpis_a, maxiter=f.options[:maxiter], steps=f.options[:steps], rtol=f.options[:rtol])
     if conv == false
@@ -128,62 +128,3 @@ function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,S
     s
 end
 
-# function _eval(::Val{:ctmcst}, f::SymbolicExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
-#     Q = symboliceval(f.args[1], env, cache)
-#     dQ_a = symboliceval(f.args[1], dvar[1], env, cache)
-#     dQ_b = symboliceval(f.args[1], dvar[2], env, cache)
-#     dQ_ab = symboliceval(f.args[1], dvar, env, cache)
-
-#     pis = _stsolve(Q)
-#     dpis_a = _stsensolve(Q, pis, dQ_a' * pis)
-#     dpis_b = _stsensolve(Q, pis, dQ_b' * pis)
-#     dpis_ab = _stsensolve(Q, pis, dQ_ab' * pis + dQ_a' * dpis_b + dQ_b' * dpis_a)
-#     dpis_ab
-# end
-
-# function _eval(::Val{:ctmcst2}, f::SymbolicExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Tv where Tv
-#     Q = symboliceval(f.args[1], env, cache)
-#     dQ_a = symboliceval(f.args[1], dvar[1], env, cache)
-#     dQ_b = symboliceval(f.args[1], dvar[2], env, cache)
-#     dQ_ab = symboliceval(f.args[1], dvar, env, cache)
-#     r = symboliceval(f.args[2], env, cache)
-#     dr_a = symboliceval(f.args[2], dvar[1], env, cache)
-#     dr_b = symboliceval(f.args[2], dvar[2], env, cache)
-#     dr_ab = symboliceval(f.args[2], dvar, env, cache)
-
-#     pis = _stsolve(Q)
-#     dpis_a = _stsensolve(Q, pis, dQ_a' * pis)
-#     dpis_b = _stsensolve(Q, pis, dQ_b' * pis)
-#     dpis_ab = _stsensolve(Q, pis, dQ_ab' * pis + dQ_a' * dpis_b + dQ_b' * dpis_a)
-#     @dot(dpis_ab, r) + @dot(dpis_a, dr_b) + @dot(dpis_b, dr_a) + @dot(pis, dr_ab)
-# end
-
-"""
-_stsolve
-Solve the stationary vector
-"""
-
-# function _stsolve(Q::Matrix{Tv})::Vector{Tv} where Tv
-#     gth(Q)
-# end
-
-# SymbolicMarkovConfig
-
-# function _stsolve(Q::AbstractSparseM{Tv,Ti})::Vector{Tv} where {Tv,Ti}
-#     x, conv, = stgs(Q, maxiter=SymbolicMarkovConfig[:maxiter], steps=SymbolicMarkovConfig[:steps], reltol=SymbolicMarkovConfig[:reltol])
-#     println(conv)
-#     if conv == true
-#         x
-#     else
-#         throw(ErrorException("stgs did not converge"))
-#     end
-# end
-
-# function _stsensolve(Q::AbstractSparseM{Tv,Ti}, pis::Vector{Tv}, b::Vector{Tv})::Vector{Tv} where {Tv,Ti}
-#     x, conv, = stsengs(Q, pis, b, maxiter=SymbolicMarkovConfig[:maxiter], steps=SymbolicMarkovConfig[:steps], reltol=SymbolicMarkovConfig[:reltol])
-#     if conv == true
-#         x
-#     else
-#         throw(ErrorException("stsengs did not converge"))
-#     end
-# end
