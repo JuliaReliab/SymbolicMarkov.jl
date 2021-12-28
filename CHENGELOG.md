@@ -1,3 +1,7 @@
+# 0.6.1
+
+- Add for a constant time in transient analysis
+
 # 0.6.0
 
 - Change macro style
