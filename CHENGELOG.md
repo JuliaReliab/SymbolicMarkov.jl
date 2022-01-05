@@ -1,3 +1,7 @@
+# 0.6.2
+
+- Add a feature to select dense/sparse CTMC kernel
+
 # 0.6.1
 
 - Add for a constant time in transient analysis

@@ -14,7 +14,7 @@ function ctmc(Q::AbstractMatrix{Tv}, initv::Vector{Tv}, r::Dict{Symbol,Vector{Tv
 end
 
 function ctmc(m::Markov)
-    Q, initv, r, states = generate(m, modeltype=:CTMC)
+    Q, initv, r, states = generate(m, modeltype=:SparseCTMC)
     ctmc(Q, initv, r, states)
 end
 

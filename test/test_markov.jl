@@ -16,6 +16,24 @@
     println(rwd)
 end
 
+@testset "Markov1_1" begin
+    m = Markov()
+    @tr m begin
+        :up => :down, 1.0
+        :down => :up, 100.0
+    end
+    @init m begin
+        :up, 1.0
+    end
+    @reward m :avail begin
+        :up, 1.0
+    end
+    Q, initv, rwd, = generate(m, modeltype=:DenseCTMC)
+    println(initv)
+    println(Q)
+    println(rwd)
+end
+
 @testset "Markov2" begin
     @vars lam1 lam2
     m = Markov()

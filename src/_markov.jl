@@ -64,14 +64,37 @@ function initial!(m::Markov, s::Symbol, p)
     m.initial[s] = p
 end
 
-function generate(m; modeltype::Symbol = :CTMC)
+function generate(m; modeltype::Symbol = :SparseCTMC)
     _generate(Val(modeltype), m)
 end
 
-function _generate(::Val{:CTMC}, m::Markov)
+function _generate(::Val{:SparseCTMC}, m::Markov)
     states = [x for x = m.state]
     index = Dict([states[i] => i for i = 1:length(states)]...)
     Q = spzeros(m.Tv, length(states), length(states))
+    for ((src,dest),t) = m.trans
+        Q[index[src],index[dest]] = t
+        Q[index[src],index[src]] -= t
+    end
+    initv = zeros(m.Tv, length(states))
+    for (s,p) = m.initial
+        initv[index[s]] = p
+    end
+    rwd = Dict{Symbol,Vector{m.Tv}}()
+    for (k,v) = m.reward
+        rwdv = zeros(m.Tv, length(states))
+        for (s,r) = v
+            rwdv[index[s]] = r
+        end
+        rwd[k] = rwdv
+    end
+    Q, initv, rwd, states
+end
+
+function _generate(::Val{:DenseCTMC}, m::Markov)
+    states = [x for x = m.state]
+    index = Dict([states[i] => i for i = 1:length(states)]...)
+    Q = zeros(m.Tv, length(states), length(states))
     for ((src,dest),t) = m.trans
         Q[index[src],index[dest]] = t
         Q[index[src],index[src]] -= t
