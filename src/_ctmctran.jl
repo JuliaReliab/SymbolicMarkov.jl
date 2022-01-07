@@ -1,3 +1,19 @@
+struct SymbolicCTMCTranExpression{Tv} <: AbstractSymbolic{Tv}
+    params::Set{Symbol}
+    op::Symbol
+    args::Any #Vector{<:AbstractSymbolic}
+    options::Dict{Symbol,Any}
+end
+
+function _toexpr(x::SymbolicCTMCTranExpression)
+    args = [_toexpr(e) for e = x.args]
+    Expr(:call, x.op, args...)
+end
+
+function Base.show(io::IO, x::SymbolicCTMCTranExpression{Tv}) where Tv
+    Base.show(io, "SymbolicCTMCTranExpression $(objectid(x))")
+end
+
 """
 Transient Markov
 """
@@ -5,13 +21,13 @@ Transient Markov
 function tran(Q::AbstractMatrix{<:AbstractSymbolic{Tv}}, x::AbstractVector{<:AbstractSymbolic{Tv}}, r::AbstractVector{<:AbstractSymbolic{Tv}}, ts::AbstractVector{Tv};
     forward::Symbol=:T, ufact::Tv=1.01, eps::Tv=1.0e-8, rmax=500, cumulative=false) where {Tv<:Number}
     s = _getparams(Q)
-    SymbolicCTMCExpression{Tv}(s, :tran, [Q,x,r], Dict{Symbol,Any}(:ts=>ts, :forward=>forward, :ufact=>ufact, :eps=>eps, :rmax=>rmax, :cumulative=>cumulative), size(Q)[1])
+    SymbolicCTMCTranExpression{Tv}(s, :tran, [Q,x,r], Dict{Symbol,Any}(:ts=>ts, :forward=>forward, :ufact=>ufact, :eps=>eps, :rmax=>rmax, :cumulative=>cumulative))
 end
 
 function tran(Q::AbstractMatrix{<:AbstractSymbolic{Tv}}, x::AbstractVector{<:AbstractSymbolic{Tv}}, r::AbstractVector{<:AbstractSymbolic{Tv}}, ts::Tv;
     forward::Symbol=:T, ufact::Tv=1.01, eps::Tv=1.0e-8, rmax=500, cumulative=false) where {Tv<:Number}
     s = _getparams(Q)
-    SymbolicCTMCExpression{Tv}(s, :tran1, [Q,x,r], Dict{Symbol,Any}(:ts=>[Tv(0), ts], :forward=>forward, :ufact=>ufact, :eps=>eps, :rmax=>rmax, :cumulative=>cumulative), size(Q)[1])
+    SymbolicCTMCTranExpression{Tv}(s, :tran1, [Q,x,r], Dict{Symbol,Any}(:ts=>[Tv(0), ts], :forward=>forward, :ufact=>ufact, :eps=>eps, :rmax=>rmax, :cumulative=>cumulative))
 end
 
 """
@@ -19,7 +35,7 @@ seval(f, env, cache)
 Return the value for expr f
 """
 
-function _eval(::Val{:tran}, f::SymbolicCTMCExpression{Tv}, env::SymbolicEnv, cache::SymbolicCache) where Tv
+function _eval(::Val{:tran}, f::SymbolicCTMCTranExpression{Tv}, env::SymbolicEnv, cache::SymbolicCache) where Tv
     Q = seval(f.args[1], env, cache)
     x = seval(f.args[2], env, cache)
     r = seval(f.args[3], env, cache)
@@ -32,7 +48,7 @@ function _eval(::Val{:tran}, f::SymbolicCTMCExpression{Tv}, env::SymbolicEnv, ca
     end
 end
 
-function _eval(::Val{:tran1}, f::SymbolicCTMCExpression{Tv}, env::SymbolicEnv, cache::SymbolicCache) where Tv
+function _eval(::Val{:tran1}, f::SymbolicCTMCTranExpression{Tv}, env::SymbolicEnv, cache::SymbolicCache) where Tv
     Q = seval(f.args[1], env, cache)
     x = seval(f.args[2], env, cache)
     r = seval(f.args[3], env, cache)
@@ -50,7 +66,7 @@ end
 # Return the first derivative of expr f
 # """
 
-function _eval(::Val{:tran}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache) where Tv
+function _eval(::Val{:tran}, f::SymbolicCTMCTranExpression{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache) where Tv
     Q = seval(f.args[1], env, cache)
     x = seval(f.args[2], env, cache)
     r = seval(f.args[3], env, cache)
@@ -73,7 +89,7 @@ function _eval(::Val{:tran}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, env::S
     end
 end
 
-function _eval(::Val{:tran1}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache) where Tv
+function _eval(::Val{:tran1}, f::SymbolicCTMCTranExpression{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache) where Tv
     Q = seval(f.args[1], env, cache)
     x = seval(f.args[2], env, cache)
     r = seval(f.args[3], env, cache)
@@ -101,7 +117,7 @@ end
 # Return the second derivative of expr f
 # """
 
-function _eval(::Val{:tran}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache) where Tv
+function _eval(::Val{:tran}, f::SymbolicCTMCTranExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache) where Tv
     Q = seval(f.args[1], env, cache)
     x = seval(f.args[2], env, cache)
     r = seval(f.args[3], env, cache)
@@ -132,7 +148,7 @@ function _eval(::Val{:tran}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,S
     end
 end
 
-function _eval(::Val{:tran1}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache) where Tv
+function _eval(::Val{:tran1}, f::SymbolicCTMCTranExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache) where Tv
     Q = seval(f.args[1], env, cache)
     x = seval(f.args[2], env, cache)
     r = seval(f.args[3], env, cache)

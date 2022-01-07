@@ -1,7 +1,7 @@
 name = "SymbolicMarkov"
 uuid = "29f2b557-c746-4a93-aecc-96f24fec2756"
 authors = ["Hiroyuki Okamura"]
-version = "0.7.2"
+version = "0.7.3"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"

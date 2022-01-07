@@ -1,3 +1,7 @@
+# 0.7.3
+
+- bugfix: separate st and tran because tran returns a value
+
 # 0.7.2
 
 - bugfix: use AbstractVectorSymbolic because CTMC functions return a vector (use SymbolicDiff ^v0.9.1)

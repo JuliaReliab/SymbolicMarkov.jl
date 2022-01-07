@@ -2,7 +2,7 @@
 Stationary Markov
 """
 
-struct SymbolicCTMCExpression{Tv} <: AbstractVectorSymbolic{Tv}
+struct SymbolicCTMCStExpression{Tv} <: AbstractVectorSymbolic{Tv}
     params::Set{Symbol}
     op::Symbol
     args::Any #Vector{<:AbstractSymbolic}
@@ -10,7 +10,7 @@ struct SymbolicCTMCExpression{Tv} <: AbstractVectorSymbolic{Tv}
     dim::Int
 end
 
-function _toexpr(x::SymbolicCTMCExpression)
+function _toexpr(x::SymbolicCTMCStExpression)
     args = [_toexpr(e) for e = x.args]
     Expr(:call, x.op, args...)
 end
@@ -23,8 +23,8 @@ function _toexpr(x::AbstractMatrix)
     Expr(:vect, [_toexpr(e) for e = x]...)
 end
 
-function Base.show(io::IO, x::SymbolicCTMCExpression{Tv}) where Tv
-    Base.show(io, "SymbolicCTMCExpression $(objectid(x))")
+function Base.show(io::IO, x::SymbolicCTMCStExpression{Tv}) where Tv
+    Base.show(io, "SymbolicCTMCStExpression $(objectid(x))")
 end
 
 """
@@ -49,24 +49,24 @@ gth, stgs
 
 function gth(Q::Matrix{<:AbstractSymbolic{Tv}}) where {Tv<:Number}
     s = _getparams(Q)
-    SymbolicCTMCExpression{Tv}(s, :gth, [Q], Dict{Symbol,Any}(), size(Q)[1])
+    SymbolicCTMCStExpression{Tv}(s, :gth, [Q], Dict{Symbol,Any}(), size(Q)[1])
 end
 
 function stgs(Q::SparseCSC{<:AbstractSymbolic{Tv}}; maxiter=5000, steps=20, rtol::Tv=Tv(1.0e-6)) where {Tv<:Number}
     s = _getparams(Q)
-    SymbolicCTMCExpression{Tv}(s, :stgs, [Q], Dict{Symbol,Any}(:maxiter=>maxiter, :steps=>steps, :rtol=>rtol), size(Q)[1])
+    SymbolicCTMCStExpression{Tv}(s, :stgs, [Q], Dict{Symbol,Any}(:maxiter=>maxiter, :steps=>steps, :rtol=>rtol), size(Q)[1])
 end
 
 function stgs(Q::SparseMatrixCSC{<:AbstractSymbolic{Tv}}; maxiter=5000, steps=20, rtol::Tv=Tv(1.0e-6)) where {Tv<:Number}
     s = _getparams(Q)
-    SymbolicCTMCExpression{Tv}(s, :stgs, [Q], Dict{Symbol,Any}(:maxiter=>maxiter, :steps=>steps, :rtol=>rtol), size(Q)[1])
+    SymbolicCTMCStExpression{Tv}(s, :stgs, [Q], Dict{Symbol,Any}(:maxiter=>maxiter, :steps=>steps, :rtol=>rtol), size(Q)[1])
 end
 
 """
 operations
 """
 
-function dot(x::SymbolicCTMCExpression{Tx}, y::Vector{<:AbstractSymbolic{Ty}}) where {Tx<:Number,Ty<:Number}
+function dot(x::SymbolicCTMCStExpression{Tx}, y::Vector{<:AbstractSymbolic{Ty}}) where {Tx<:Number,Ty<:Number}
     Tv = promote_type(Tx,Ty)
     s = union(x.params, [u.params for u = y]...)
     SymbolicExpression{Tv}(s, :dot, [x, y])
@@ -77,12 +77,12 @@ seval(f, env, cache)
 Return the value for expr f
 """
 
-function _eval(::Val{:gth}, f::SymbolicCTMCExpression{Tv}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
+function _eval(::Val{:gth}, f::SymbolicCTMCStExpression{Tv}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
     Q = seval(f.args[1], env, cache)
     gth(Q)
 end
 
-function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
+function _eval(::Val{:stgs}, f::SymbolicCTMCStExpression{Tv}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
     Q = seval(f.args[1], env, cache)
     x, conv, iter, rerror = stgs(Q, maxiter=f.options[:maxiter], steps=f.options[:steps], rtol=f.options[:rtol])
     if conv == false
@@ -96,14 +96,14 @@ seval(f, dvar, env, cache)
 Return the first derivative of expr f
 """
 
-function _eval(::Val{:gth}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
+function _eval(::Val{:gth}, f::SymbolicCTMCStExpression{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
     pis = seval(f, env, cache)
     Q = seval(f.args[1], env, cache)
     dQ = seval(f.args[1], dvar, env, cache)
     stsen(Q, pis, dQ' * pis)
 end
 
-function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
+function _eval(::Val{:stgs}, f::SymbolicCTMCStExpression{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
     pis = seval(f, env, cache)
     Q = seval(f.args[1], env, cache)
     dQ = seval(f.args[1], dvar, env, cache)
@@ -119,7 +119,7 @@ seval(f, dvar, env, cache)
 Return the second derivative of expr f
 """
 
-function _eval(::Val{:gth}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
+function _eval(::Val{:gth}, f::SymbolicCTMCStExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
     pis = seval(f, env, cache)
     dpis_a = seval(f, dvar[1], env, cache)
     dpis_b = seval(f, dvar[1], env, cache)
@@ -132,7 +132,7 @@ function _eval(::Val{:gth}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,Sy
     stsen(Q, pis, dQ_ab' * pis + dQ_a' * dpis_b + dQ_b' * dpis_a)
 end
 
-function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
+function _eval(::Val{:stgs}, f::SymbolicCTMCStExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
     pis = seval(f, env, cache)
     dpis_a = seval(f, dvar[1], env, cache)
     dpis_b = seval(f, dvar[1], env, cache)
