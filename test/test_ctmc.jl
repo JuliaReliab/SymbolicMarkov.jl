@@ -7,9 +7,9 @@
     ma = gth(Q)
     
     x = 2.0
-    @bind :x => x
-    res = seval(ma)
     ex = gth(Float64[-x x 0; 1 -2 1; 0 1 -1])
+    @bind x = x
+    res = seval(ma)
     @test isapprox(ex, res)
 end
 
@@ -22,9 +22,9 @@ end
     ma = stgs(csc)
     
     x = 2.0
-    @bind :x => x
-    res = seval(ma)
     ex = gth(Float64[-x x 0; 1 -2 1; 0 1 -1])
+    @bind x = x
+    res = seval(ma)
     @test isapprox(ex, res)
 end
 
@@ -37,9 +37,9 @@ end
     ma = dot(gth(Q), v)
     # println(ma)
     x = 2.0
-    @bind :x => x
-    res = seval(ma)
     ex = sum(gth(Float64[-x x 0; 1 -2 1; 0 1 -1]) .* [1,0,0])
+    @bind x = x
+    res = seval(ma)
     println(res, ex)
     @test isapprox(ex, res)
 end
@@ -53,15 +53,15 @@ end
     csc = SparseCSC(Q)
     ma = stgs(csc)
     
-    x = 2.0
+    x0 = 2.0
     test = SymbolicEnv()
-    @bind test :x => x
+    @bind test x = x0
     h = 0.0001
     
     test0 = SymbolicEnv()
-    @bind test0 :x => x + h
+    @bind test0 x = x0 + h
     test1 = SymbolicEnv()
-    @bind test1 :x => x - h
+    @bind test1 x = x0 - h
     
     vv0 = seval(ma, test0)
     vv1 = seval(ma, test1)
@@ -78,15 +78,15 @@ end
     csc = SparseCSC(Q)
     ma = dot(stgs(csc), v)
     
-    x = 2.0
+    x0 = 2.0
     test = SymbolicEnv()
-    @bind test :x => x
+    @bind test x = x0
     h = 0.0001
     
     test0 = SymbolicEnv()
-    @bind test0 :x => x + h
+    @bind test0 x = x0 + h
     test1 = SymbolicEnv()
-    @bind test1 :x => x - h
+    @bind test1 x = x0 - h
     
     vv0 = seval(ma, test0)
     vv1 = seval(ma, test1)
@@ -103,15 +103,15 @@ end
     csc = SparseCSC(Q)
     ma = stgs(csc)
 
-    x = 2.0
+    x0 = 2.0
     test = SymbolicEnv()
-    @bind test :x => x
+    @bind test x = x0
     h = 0.0001
     
     test0 = SymbolicEnv()
-    @bind test0 :x => x + h
+    @bind test0 x = x0 + h
     test1 = SymbolicEnv()
-    @bind test1 :x => x - h
+    @bind test1 x = x0 - h
     
     vv0 = seval(ma, test0)
     vv1 = seval(ma, test)
@@ -129,15 +129,15 @@ end
     csc = SparseCSC(Q)
     ma = dot(stgs(csc), v)
 
-    x = 2.0
+    x0 = 2.0
     test = SymbolicEnv()
-    @bind test :x => x
+    @bind test x = x0
     h = 0.0001
     
     test0 = SymbolicEnv()
-    @bind test0 :x => x + h
+    @bind test0 x = x0 + h
     test1 = SymbolicEnv()
-    @bind test1 :x => x - h
+    @bind test1 x = x0 - h
     
     vv0 = seval(ma, test0)
     vv1 = seval(ma, test)

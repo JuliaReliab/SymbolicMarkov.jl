@@ -55,8 +55,8 @@ end
     avail = dot(stgs(Q), rwd[:avail])
 
     @bind begin
-        :lam1 => 1.0
-        :lam2 => 100.0
+        lam1 = 1.0
+        lam2 = 100.0
     end
 
     a = seval(avail)
@@ -83,17 +83,15 @@ end
         end
     end
 
-    @vars lam1 lam2
+    @bind begin
+        lam1 = 1.0
+        lam2 = 100.0
+    end
     m = reliab(lam1, lam2)
     println(ctmc)
 
     model = ctmc(m)
     avail = exrss(model, reward=:avail)
-
-    @bind begin
-        :lam1 => 1.0
-        :lam2 => 100.0
-    end
 
     a = seval(avail)
     println(a)
@@ -177,7 +175,12 @@ end
         @init :up, 1.0
         @reward :avail :up, 1
     end
-    @vars lam1 lam2
+
+    @bind begin
+        lam1 = 1.0
+        lam2 = 100.0
+    end
+
     m = reliab(lam1, lam2)
     println(m)
 
@@ -187,11 +190,6 @@ end
     tavail = exrt(LinRange(0, 1, 10), ctmc(m), reward=:avail)
     println(tavail)
     
-    @bind begin
-        :lam1 => 1.0
-        :lam2 => 100.0
-    end
-
     a = seval(tavail)
     println(a)
     da1 = seval(tavail, :lam1)
@@ -210,7 +208,7 @@ end
         for i = 1:k
             @tr Symbol(i) => Symbol(i-1), mu
         end
-        @init Symbol(0), 1.0
+        @init @s(0), 1.0
         for i = 0:k
             @reward :len Symbol(i), i
         end

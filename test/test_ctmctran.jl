@@ -7,14 +7,10 @@
     x = @expr [1.0, 0, 0]
     r = @expr [1.0, 1, 0]
     ma = tran(Q, x, r, LinRange(0, 1, 10))
-    
-    x = 2.0
-    y = 1.0
-    z = 5.0
     @bind begin
-        :x => x
-        :y => y
-        :z => z
+        x = 2.0
+        y = 1.0
+        z = 5.0
     end
     result = seval(ma)
     println(result)
@@ -32,13 +28,10 @@ end
     r = @expr [1.0, 1, 0]
     ma = tran(Q, x, r, LinRange(0, 1, 10))
     
-    x = 2.0
-    y = 1.0
-    z = 5.0
     @bind begin
-        :x => x
-        :y => y
-        :z => z
+        x = 2.0
+        y = 1.0
+        z = 5.0
     end
     result = seval(ma, :x)
     println(result)
@@ -56,13 +49,10 @@ end
     r = @expr [1.0, 1, 0]
     ma = tran(Q, x, r, LinRange(0, 1, 10))
     
-    x = 2.0
-    y = 1.0
-    z = 5.0
     @bind begin
-        :x => x
-        :y => y
-        :z => z
+        x = 2.0
+        y = 1.0
+        z = 5.0
     end
     result = seval(ma, (:x,:y))
     println(result)
@@ -80,13 +70,10 @@ end
     r = @expr [1.0, 1, 0]
     ma = tran(Q, x, r, 1.0)
     
-    x = 2.0
-    y = 1.0
-    z = 5.0
     @bind begin
-        :x => x
-        :y => y
-        :z => z
+        x = 2.0
+        y = 1.0
+        z = 5.0
     end
     result = seval(ma, (:x,:y))
     println(result)

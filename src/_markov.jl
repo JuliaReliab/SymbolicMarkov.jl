@@ -27,6 +27,10 @@ mutable struct Markov
     ireward::Dict{Symbol,Dict{Tuple{Symbol,Symbol},Any}}
 end
 
+function Base.show(io::IO, x::Markov)
+    Base.show(io, "Markov $(objectid(x))")
+end
+
 function Markov()
     Markov(Float64, Set{Symbol}(), Dict{Symbol,Any}(), Dict{Tuple{Symbol,Symbol},Any}(),
         Dict{Symbol,Dict{Symbol,Any}}(), Dict{Symbol,Dict{Tuple{Symbol,Symbol},Any}}())
@@ -215,3 +219,6 @@ function _replace_macro(x::Expr)
     end
 end
 
+macro s(x)
+    esc(Expr(:call, :Symbol, x))
+end

@@ -1,3 +1,8 @@
+# 0.7.0
+
+- Change @bind (use SymbolicDiff ^v0.9.0)
+- Add @s macro
+
 # 0.6.2
 
 - Add a feature to select dense/sparse CTMC kernel

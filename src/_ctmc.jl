@@ -9,12 +9,16 @@ struct CTMCModel{Tv}
     states::Vector{Symbol}
 end
 
+function Base.show(io::IO, x::CTMCModel{Tv}) where Tv
+    Base.show(io, "CTMCModel($(objectid(x)))")
+end
+
 function ctmc(Q::AbstractMatrix{Tv}, initv::Vector{Tv}, r::Dict{Symbol,Vector{Tv}}, states::Vector{Symbol}) where Tv
     CTMCModel{Tv}(Q, initv, r, states)
 end
 
-function ctmc(m::Markov)
-    Q, initv, r, states = generate(m, modeltype=:SparseCTMC)
+function ctmc(m::Markov, modeltype=:SparseCTMC)
+    Q, initv, r, states = generate(m, modeltype=modeltype)
     ctmc(Q, initv, r, states)
 end
 

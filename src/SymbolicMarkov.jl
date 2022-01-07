@@ -1,6 +1,6 @@
 module SymbolicMarkov
 
-export Markov, trans!, reward!, initial!, generate, @tr, @reward, @init, @markov
+export Markov, trans!, reward!, initial!, generate, @tr, @reward, @init, @markov, @s
 export CTMCModel, ctmc, exrss, exrt, cexrt
 
 using SymbolicDiff: AbstractSymbolic, SymbolicEnv, SymbolicCache, SymbolicExpression, @expr, @bind, @vars

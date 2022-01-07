@@ -23,7 +23,7 @@ function _toexpr(x::AbstractMatrix)
 end
 
 function Base.show(io::IO, x::SymbolicCTMCExpression{Tv}) where Tv
-    Base.show(io, x.args)
+    Base.show(io, "SymbolicCTMCExpression $(objectid(x))")
 end
 
 """
