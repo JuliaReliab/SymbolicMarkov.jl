@@ -1,3 +1,7 @@
+# 0.7.1
+
+- add sensitivity for gth
+
 # 0.7.0
 
 - Change @bind (use SymbolicDiff ^v0.9.0)

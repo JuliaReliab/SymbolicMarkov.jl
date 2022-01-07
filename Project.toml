@@ -1,7 +1,7 @@
 name = "SymbolicMarkov"
 uuid = "29f2b557-c746-4a93-aecc-96f24fec2756"
 authors = ["Hiroyuki Okamura"]
-version = "0.7.0"
+version = "0.7.1"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
@@ -11,7 +11,7 @@ SparseMatrix = "b2a93422-1445-416e-a290-5781b57493d3"
 SymbolicDiff = "36d81f91-e041-498f-9150-12818d600b71"
 
 [compat]
-NMarkov = "0.3.2"
+NMarkov = "0.3.3"
 SparseMatrix = "0.2.2"
 SymbolicDiff = "0.9.0"
 julia = "1"

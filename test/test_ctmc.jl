@@ -145,3 +145,28 @@ end
     ex = (vv0 -2*vv1 + vv2) / (h^2)
     @test isapprox(seval(ma, (:x, :x), test), ex, atol = 1.0e-5)
 end
+
+@testset "CTMCStsen3" begin
+    Q = @expr [
+        -x x 0;
+        1 -2 1;
+        0 1 -1]
+    v = @expr [1, 0, 0]
+    csc = Q
+    ma = dot(gth(csc), v)
+    
+    x0 = 2.0
+    test = SymbolicEnv()
+    @bind test x = x0
+    h = 0.0001
+    
+    test0 = SymbolicEnv()
+    @bind test0 x = x0 + h
+    test1 = SymbolicEnv()
+    @bind test1 x = x0 - h
+    
+    vv0 = seval(ma, test0)
+    vv1 = seval(ma, test1)
+    ex = (vv0 - vv1) / (2*h)
+    @test isapprox(seval(ma, :x, test), ex)
+end

@@ -95,6 +95,13 @@ seval(f, dvar, env, cache)
 Return the first derivative of expr f
 """
 
+function _eval(::Val{:gth}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
+    pis = seval(f, env, cache)
+    Q = seval(f.args[1], env, cache)
+    dQ = seval(f.args[1], dvar, env, cache)
+    stsen(Q, pis, dQ' * pis)
+end
+
 function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
     pis = seval(f, env, cache)
     Q = seval(f.args[1], env, cache)
@@ -110,6 +117,19 @@ end
 seval(f, dvar, env, cache)
 Return the second derivative of expr f
 """
+
+function _eval(::Val{:gth}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
+    pis = seval(f, env, cache)
+    dpis_a = seval(f, dvar[1], env, cache)
+    dpis_b = seval(f, dvar[1], env, cache)
+
+    Q = seval(f.args[1], env, cache)
+    dQ_a = seval(f.args[1], dvar[1], env, cache)
+    dQ_b = seval(f.args[1], dvar[2], env, cache)
+    dQ_ab = seval(f.args[1], dvar, env, cache)
+
+    stsen(Q, pis, dQ_ab' * pis + dQ_a' * dpis_b + dQ_b' * dpis_a)
+end
 
 function _eval(::Val{:stgs}, f::SymbolicCTMCExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
     pis = seval(f, env, cache)
