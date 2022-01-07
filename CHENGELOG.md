@@ -1,3 +1,7 @@
+# 0.7.2
+
+- bugfix: use AbstractVectorSymbolic because CTMC functions return a vector (use SymbolicDiff ^v0.9.1)
+
 # 0.7.1
 
 - add sensitivity for gth

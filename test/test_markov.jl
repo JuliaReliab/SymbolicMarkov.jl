@@ -215,3 +215,27 @@ end
     end
     println(e)
 end
+
+@testset "hybrid2" begin
+    @markov midplane(lam, mu) begin
+        @tr begin
+            :up => :down, lam
+            :down => :up, mu
+        end
+        @reward :r begin
+            :up, 1
+        end
+    end
+
+    @bind begin
+        lam = 0.4
+        mu = 1.5
+        delta = 1.5
+    end
+
+    m = ctmc(midplane(lam, mu))
+    println(seval(stgs(m.Q), lam))
+    println(seval([lam, mu], delta))
+    println(seval(stgs(m.Q), delta))
+    println(seval(stgs(m.Q), (lam, delta)))
+end

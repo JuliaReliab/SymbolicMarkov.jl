@@ -2,11 +2,12 @@
 Stationary Markov
 """
 
-struct SymbolicCTMCExpression{Tv} <: AbstractSymbolic{Tv}
+struct SymbolicCTMCExpression{Tv} <: AbstractVectorSymbolic{Tv}
     params::Set{Symbol}
     op::Symbol
     args::Any #Vector{<:AbstractSymbolic}
     options::Dict{Symbol,Any}
+    dim::Int
 end
 
 function _toexpr(x::SymbolicCTMCExpression)
@@ -48,17 +49,17 @@ gth, stgs
 
 function gth(Q::Matrix{<:AbstractSymbolic{Tv}}) where {Tv<:Number}
     s = _getparams(Q)
-    SymbolicCTMCExpression{Tv}(s, :gth, [Q], Dict{Symbol,Any}())
+    SymbolicCTMCExpression{Tv}(s, :gth, [Q], Dict{Symbol,Any}(), size(Q)[1])
 end
 
 function stgs(Q::SparseCSC{<:AbstractSymbolic{Tv}}; maxiter=5000, steps=20, rtol::Tv=Tv(1.0e-6)) where {Tv<:Number}
     s = _getparams(Q)
-    SymbolicCTMCExpression{Tv}(s, :stgs, [Q], Dict{Symbol,Any}(:maxiter=>maxiter, :steps=>steps, :rtol=>rtol))
+    SymbolicCTMCExpression{Tv}(s, :stgs, [Q], Dict{Symbol,Any}(:maxiter=>maxiter, :steps=>steps, :rtol=>rtol), size(Q)[1])
 end
 
 function stgs(Q::SparseMatrixCSC{<:AbstractSymbolic{Tv}}; maxiter=5000, steps=20, rtol::Tv=Tv(1.0e-6)) where {Tv<:Number}
     s = _getparams(Q)
-    SymbolicCTMCExpression{Tv}(s, :stgs, [Q], Dict{Symbol,Any}(:maxiter=>maxiter, :steps=>steps, :rtol=>rtol))
+    SymbolicCTMCExpression{Tv}(s, :stgs, [Q], Dict{Symbol,Any}(:maxiter=>maxiter, :steps=>steps, :rtol=>rtol), size(Q)[1])
 end
 
 """

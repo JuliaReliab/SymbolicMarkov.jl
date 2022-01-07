@@ -3,7 +3,7 @@ module SymbolicMarkov
 export Markov, trans!, reward!, initial!, generate, @tr, @reward, @init, @markov, @s
 export CTMCModel, ctmc, exrss, exrt, cexrt
 
-using SymbolicDiff: AbstractSymbolic, SymbolicEnv, SymbolicCache, SymbolicExpression, @expr, @bind, @vars
+using SymbolicDiff: AbstractSymbolic, AbstractVectorSymbolic, SymbolicEnv, SymbolicCache, SymbolicExpression, @expr, @bind, @vars
 import SymbolicDiff: _toexpr, _eval, seval
 import NMarkov: gth, stsen, stgs, stsengs, tran
 using SparseArrays: SparseMatrixCSC, spzeros
