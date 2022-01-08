@@ -1,3 +1,7 @@
+# 0.7.4
+
+- change to mutable objects
+
 # 0.7.3
 
 - bugfix: separate st and tran because tran returns a value

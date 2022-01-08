@@ -1,4 +1,4 @@
-struct SymbolicCTMCTranExpression{Tv} <: AbstractSymbolic{Tv}
+mutable struct SymbolicCTMCTranExpression{Tv} <: AbstractSymbolic{Tv}
     params::Set{Symbol}
     op::Symbol
     args::Any #Vector{<:AbstractSymbolic}

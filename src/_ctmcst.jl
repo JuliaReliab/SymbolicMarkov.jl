@@ -2,7 +2,7 @@
 Stationary Markov
 """
 
-struct SymbolicCTMCStExpression{Tv} <: AbstractVectorSymbolic{Tv}
+mutable struct SymbolicCTMCStExpression{Tv} <: AbstractVectorSymbolic{Tv}
     params::Set{Symbol}
     op::Symbol
     args::Any #Vector{<:AbstractSymbolic}

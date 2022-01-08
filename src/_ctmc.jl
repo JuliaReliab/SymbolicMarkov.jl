@@ -2,7 +2,7 @@
 ctmc type
 """
 
-struct CTMCModel{Tv}
+mutable struct CTMCModel{Tv}
     Q::AbstractMatrix{Tv}
     initv::Vector{Tv}
     reward::Dict{Symbol,Vector{Tv}}
