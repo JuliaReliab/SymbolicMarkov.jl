@@ -1,3 +1,7 @@
+# 0.7.5
+
+- add prob for stationary
+
 # 0.7.4
 
 - change to mutable objects

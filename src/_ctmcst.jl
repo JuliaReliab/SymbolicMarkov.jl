@@ -2,7 +2,9 @@
 Stationary Markov
 """
 
-mutable struct SymbolicCTMCStExpression{Tv} <: AbstractVectorSymbolic{Tv}
+abstract type AbstractSymbolicCTMCStExpression{Tv} <: AbstractVectorSymbolic{Tv} end
+
+mutable struct SymbolicCTMCStExpression{Tv} <: AbstractSymbolicCTMCStExpression{Tv}
     params::Set{Symbol}
     op::Symbol
     args::Any #Vector{<:AbstractSymbolic}
@@ -10,10 +12,9 @@ mutable struct SymbolicCTMCStExpression{Tv} <: AbstractVectorSymbolic{Tv}
     dim::Int
 end
 
-function _toexpr(x::SymbolicCTMCStExpression)
-    args = [_toexpr(e) for e = x.args]
-    Expr(:call, x.op, args...)
-end
+# function _toexpr(x::AbstractSymbolicCTMCStExpression)
+#     Expr(:call, x.op, args...)
+# end
 
 function _toexpr(x::AbstractVector)
     Expr(:vect, [_toexpr(e) for e = x]...)
@@ -23,7 +24,7 @@ function _toexpr(x::AbstractMatrix)
     Expr(:vect, [_toexpr(e) for e = x]...)
 end
 
-function Base.show(io::IO, x::SymbolicCTMCStExpression{Tv}) where Tv
+function Base.show(io::IO, x::AbstractSymbolicCTMCStExpression{Tv}) where Tv
     Base.show(io, "SymbolicCTMCStExpression $(objectid(x))")
 end
 
@@ -66,7 +67,7 @@ end
 operations
 """
 
-function dot(x::SymbolicCTMCStExpression{Tx}, y::Vector{<:AbstractSymbolic{Ty}}) where {Tx<:Number,Ty<:Number}
+function dot(x::AbstractSymbolicCTMCStExpression{Tx}, y::Vector{<:AbstractSymbolic{Ty}}) where {Tx<:Number,Ty<:Number}
     Tv = promote_type(Tx,Ty)
     s = union(x.params, [u.params for u = y]...)
     SymbolicExpression{Tv}(s, :dot, [x, y])
@@ -149,62 +150,47 @@ function _eval(::Val{:stgs}, f::SymbolicCTMCStExpression{Tv}, dvar::Tuple{Symbol
     s
 end
 
-# function _eval(::Val{:ctmcst}, f::SymbolicExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
-#     Q = seval(f.args[1], env, cache)
-#     dQ_a = seval(f.args[1], dvar[1], env, cache)
-#     dQ_b = seval(f.args[1], dvar[2], env, cache)
-#     dQ_ab = seval(f.args[1], dvar, env, cache)
-
-#     pis = _stsolve(Q)
-#     dpis_a = _stsensolve(Q, pis, dQ_a' * pis)
-#     dpis_b = _stsensolve(Q, pis, dQ_b' * pis)
-#     dpis_ab = _stsensolve(Q, pis, dQ_ab' * pis + dQ_a' * dpis_b + dQ_b' * dpis_a)
-#     dpis_ab
-# end
-
-# function _eval(::Val{:ctmcst2}, f::SymbolicExpression{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Tv where Tv
-#     Q = seval(f.args[1], env, cache)
-#     dQ_a = seval(f.args[1], dvar[1], env, cache)
-#     dQ_b = seval(f.args[1], dvar[2], env, cache)
-#     dQ_ab = seval(f.args[1], dvar, env, cache)
-#     r = seval(f.args[2], env, cache)
-#     dr_a = seval(f.args[2], dvar[1], env, cache)
-#     dr_b = seval(f.args[2], dvar[2], env, cache)
-#     dr_ab = seval(f.args[2], dvar, env, cache)
-
-#     pis = _stsolve(Q)
-#     dpis_a = _stsensolve(Q, pis, dQ_a' * pis)
-#     dpis_b = _stsensolve(Q, pis, dQ_b' * pis)
-#     dpis_ab = _stsensolve(Q, pis, dQ_ab' * pis + dQ_a' * dpis_b + dQ_b' * dpis_a)
-#     @dot(dpis_ab, r) + @dot(dpis_a, dr_b) + @dot(dpis_b, dr_a) + @dot(pis, dr_ab)
-# end
-
 """
-_stsolve
-Solve the stationary vector
+eval for part of vector
 """
 
-# function _stsolve(Q::Matrix{Tv})::Vector{Tv} where Tv
-#     gth(Q)
-# end
+mutable struct SymbolicCTMCStExpressionPart{Tv} <: AbstractSymbolicCTMCStExpression{Tv}
+    params::Set{Symbol}
+    op::Symbol
+    ctmc::SymbolicCTMCStExpression{Tv}
+    elem::Vector{Bool}
+    dim::Int
+end
 
-# SymbolicMarkovConfig
+function Base.getindex(x::SymbolicCTMCStExpression{Tx}, v::Vector{Bool}) where {Tx<:Number}
+    SymbolicCTMCStExpressionPart{Tx}(x.params, x.op, x, v, sum(v))
+end
 
-# function _stsolve(Q::AbstractSparseM{Tv,Ti})::Vector{Tv} where {Tv,Ti}
-#     x, conv, = stgs(Q, maxiter=SymbolicMarkovConfig[:maxiter], steps=SymbolicMarkovConfig[:steps], reltol=SymbolicMarkovConfig[:reltol])
-#     println(conv)
-#     if conv == true
-#         x
-#     else
-#         throw(ErrorException("stgs did not converge"))
-#     end
-# end
+function Base.getindex(x::SymbolicCTMCStExpressionPart{Tx}, v::Vector{Bool}) where {Tx<:Number}
+    SymbolicCTMCStExpressionPart{Tx}(x.ctmc.params, x.ctmc.op, x.ctmc, v, sum(v))
+end
 
-# function _stsensolve(Q::AbstractSparseM{Tv,Ti}, pis::Vector{Tv}, b::Vector{Tv})::Vector{Tv} where {Tv,Ti}
-#     x, conv, = stsengs(Q, pis, b, maxiter=SymbolicMarkovConfig[:maxiter], steps=SymbolicMarkovConfig[:steps], reltol=SymbolicMarkovConfig[:reltol])
-#     if conv == true
-#         x
-#     else
-#         throw(ErrorException("stsengs did not converge"))
-#     end
-# end
+function _eval(::Val{:gth}, f::SymbolicCTMCStExpressionPart{Tv}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
+    seval(f.ctmc, env, cache)[f.elem]
+end
+
+function _eval(::Val{:stgs}, f::SymbolicCTMCStExpressionPart{Tv}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
+    seval(f.ctmc, env, cache)[f.elem]
+end
+
+function _eval(::Val{:gth}, f::SymbolicCTMCStExpressionPart{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
+    seval(f.ctmc, dvar, env, cache)[f.elem]
+end
+
+function _eval(::Val{:stgs}, f::SymbolicCTMCStExpressionPart{Tv}, dvar::Symbol, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
+    seval(f.ctmc, dvar, env, cache)[f.elem]
+end
+
+function _eval(::Val{:gth}, f::SymbolicCTMCStExpressionPart{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
+    seval(f.ctmc, dvar, env, cache)[f.elem]
+end
+
+function _eval(::Val{:stgs}, f::SymbolicCTMCStExpressionPart{Tv}, dvar::Tuple{Symbol,Symbol}, env::SymbolicEnv, cache::SymbolicCache)::Vector{Tv} where Tv
+    seval(f.ctmc, dvar, env, cache)[f.elem]
+end
+

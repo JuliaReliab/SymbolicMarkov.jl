@@ -2,6 +2,7 @@ module SymbolicMarkov
 
 export Markov, trans!, reward!, initial!, generate, @tr, @reward, @init, @markov, @s
 export CTMCModel, ctmc, exrss, exrt, cexrt
+export prob
 
 using SymbolicDiff: AbstractSymbolic, AbstractVectorSymbolic, SymbolicEnv, SymbolicCache, SymbolicExpression, @expr, @bind, @vars
 import SymbolicDiff: _toexpr, _eval, seval

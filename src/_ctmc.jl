@@ -23,6 +23,43 @@ function ctmc(m::Markov, modeltype=:SparseCTMC)
 end
 
 """
+prob
+"""
+
+function prob(m::CTMCModel{Tv}; states = m.states, maxiter=5000, steps=20, rtol=1.0e-6) where Tv
+    s = [x in states for x = m.states]
+    _prob(m.Q, maxiter, steps, rtol)[s]
+end
+
+function _prob(Q::Matrix{Tv}, maxiter, steps, rtol) where Tv
+    gth(Q)
+end
+
+function _prob(Q::SparseCSC{Tv,Ti}, maxiter, steps, rtol) where {Tv<:Number,Ti}
+    x, conv, iter, rerror = stgs(Q, maxiter=maxiter, steps=steps, rtol=rtol)
+    if conv == false
+        @warn "GS did not converge", iter, rerror
+    end
+    x
+end
+
+function _prob(Q::SparseMatrixCSC{Tv,Ti}, maxiter, steps, rtol) where {Tv<:Number,Ti}
+    x, conv, iter, rerror = stgs(Q, maxiter=maxiter, steps=steps, rtol=rtol)
+    if conv == false
+        @warn "GS did not converge", iter, rerror
+    end
+    x
+end
+
+function _prob(Q::SparseCSC{<:AbstractSymbolic{Tv},Ti}, maxiter, steps, rtol) where {Tv,Ti}
+    stgs(Q, maxiter=maxiter, steps=steps, rtol=rtol)
+end
+
+function _prob(Q::SparseMatrixCSC{<:AbstractSymbolic{Tv},Ti}, maxiter, steps, rtol) where {Tv,Ti}
+    stgs(Q, maxiter=maxiter, steps=steps, rtol=rtol)
+end
+
+"""
 exrss
 """
 
@@ -71,11 +108,11 @@ function cexrt(ts::AbstractVector{<:Number}, m::CTMCModel{Tv}; reward, forward=:
 end
 
 function exrt(ts::Number, m::CTMCModel{Tv}; reward, forward=:T, ufact=1.01, eps=1.0e-8, rmax=500) where {Tv}
-    _exrt(m.Q, m.initv, m.reward[reward], [ts], forward, ufact, eps, rmax)
+    _exrt(m.Q, m.initv, m.reward[reward], [ts], forward, ufact, eps, rmax)[1]
 end
 
 function cexrt(ts::Number, m::CTMCModel{Tv}; reward, forward=:T, ufact=1.01, eps=1.0e-8, rmax=500) where {Tv}
-    _cexrt(m.Q, m.initv, m.reward[reward], [ts], forward, ufact, eps, rmax)
+    _cexrt(m.Q, m.initv, m.reward[reward], [ts], forward, ufact, eps, rmax)[1]
 end
 
 function _exrt(Q::AbstractMatrix{Tv}, x::AbstractVector{Tv}, r::AbstractVector{Tv}, ts::AbstractVector{<:Number}, forward, ufact, eps, rmax) where {Tv<:Number}
