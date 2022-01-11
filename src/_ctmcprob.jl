@@ -1,20 +1,3 @@
-
-mutable struct SymbolicCTMCProbExpression{Tv} <: AbstractVectorSymbolic{Tv}
-    params::Set{Symbol}
-    op::Symbol
-    Q#::AbstractMatrixSymbolic{Tv}
-    options::Dict{Symbol,Any}
-    dim::Int
-end
-
-function _toexpr(x::SymbolicCTMCProbExpression)
-    Expr(:call, x.op, _toexpr(x.Q))
-end
-
-function Base.show(io::IO, x::SymbolicCTMCProbExpression{Tv}) where Tv
-    Base.show(io, "SymbolicCTMCProbExpression $(objectid(x))")
-end
-
 """
 prob
 """
@@ -29,7 +12,6 @@ function prob(Q::Matrix{Tv}; maxiter=5000, steps=20, rtol=1.0e-6) where Tv
 end
 
 function prob(Q::SparseCSC{Tv,Ti}; maxiter=5000, steps=20, rtol=1.0e-6) where {Tv,Ti}
-    println("ok")
     _prob(Q, maxiter, steps, rtol)
 end
 
@@ -64,6 +46,46 @@ function _prob(Q::SparseMatrixCSC{Tv,Ti}, maxiter, steps, rtol)::Vector{Tv} wher
         @warn "GS did not converge", iter, rerror
     end
     x
+end
+
+##
+
+function _probsen(Q::Matrix{Tv}, pis::Vector{Tv}, b::Vector{Tv}, maxiter, steps, rtol)::Vector{Tv} where {Tv<:Number}
+    stsen(Q, pis, b)
+end
+
+function _probsen(Q::SparseCSC{Tv,Ti}, pis::Vector{Tv}, b::Vector{Tv}, maxiter, steps, rtol)::Vector{Tv} where {Tv<:Number,Ti}
+    s, conv, iter, rerror = stsengs(Q, pis, b, maxiter=maxiter, steps=steps, rtol=rtol)
+    if conv == false
+        @warn "GSsen did not converge", iter, rerror
+    end
+    s
+end
+
+function _probsen(Q::SparseMatrixCSC{Tv,Ti}, pis::Vector{Tv}, b::Vector{Tv}, maxiter, steps, rtol)::Vector{Tv} where {Tv<:Number,Ti}
+    s, conv, iter, rerror = stsengs(Q, pis, b, maxiter=maxiter, steps=steps, rtol=rtol)
+    if conv == false
+        @warn "GSsen did not converge", iter, rerror
+    end
+    s
+end
+
+##
+
+mutable struct SymbolicCTMCProbExpression{Tv} <: AbstractVectorSymbolic{Tv}
+    params::Set{Symbol}
+    op::Symbol
+    Q::AbstractMatrixSymbolic{Tv}
+    options::Dict{Symbol,Any}
+    dim::Int
+end
+
+function _toexpr(x::SymbolicCTMCProbExpression)
+    Expr(:call, x.op, _toexpr(x.Q))
+end
+
+function Base.show(io::IO, x::SymbolicCTMCProbExpression{Tv}) where Tv
+    Base.show(io, "SymbolicCTMCProbExpression $(objectid(x))")
 end
 
 ##
@@ -111,26 +133,6 @@ function _eval(::Val{:prob}, f::SymbolicCTMCProbExpression{Tv}, dvar::Tuple{Symb
     dQ_ab = seval(f.Q, dvar, env, cache)
 
     _probsen(Q, pis, dQ_ab' * pis + dQ_a' * dpis_b + dQ_b' * dpis_a, f.options[:maxiter], f.options[:steps], f.options[:rtol])
-end
-
-function _probsen(Q::Matrix{Tv}, pis::Vector{Tv}, b::Vector{Tv}, maxiter, steps, rtol)::Vector{Tv} where {Tv<:Number}
-    stsen(Q, pis, b)
-end
-
-function _probsen(Q::SparseCSC{Tv,Ti}, pis::Vector{Tv}, b::Vector{Tv}, maxiter, steps, rtol)::Vector{Tv} where {Tv<:Number,Ti}
-    s, conv, iter, rerror = stsengs(Q, pis, b, maxiter=maxiter, steps=steps, rtol=rtol)
-    if conv == false
-        @warn "GSsen did not converge", iter, rerror
-    end
-    s
-end
-
-function _probsen(Q::SparseMatrixCSC{Tv,Ti}, pis::Vector{Tv}, b::Vector{Tv}, maxiter, steps, rtol)::Vector{Tv} where {Tv<:Number,Ti}
-    s, conv, iter, rerror = stsengs(Q, pis, b, maxiter=maxiter, steps=steps, rtol=rtol)
-    if conv == false
-        @warn "GSsen did not converge", iter, rerror
-    end
-    s
 end
 
 """

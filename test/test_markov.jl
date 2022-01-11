@@ -151,54 +151,54 @@ end
 #     println(tavail)
 # end
 
-# @testset "Markov7" begin
-#     @markov reliab(lam1, lam2) begin
-#         @tr :up => :down, lam1
-#         @tr :down => :up, lam2
-#         @init :up, 1.0
-#         @reward :avail :up, 1
-#     end
-#     m = reliab(1, 100)
-#     println(m)
+@testset "Markov7" begin
+    @markov reliab(lam1, lam2) begin
+        @tr :up => :down, lam1
+        @tr :down => :up, lam2
+        @init :up, 1.0
+        @reward :avail :up, 1
+    end
+    m = reliab(1, 100)
+    println(m)
 
-#     avail = exrss(ctmc(m), reward=:avail)
-#     println(avail)
+    avail = exrss(ctmc(m), reward=:avail)
+    println(avail)
     
-#     tavail = cexrt(0.5, ctmc(m), reward=:avail)
-#     println(tavail)
-# end
+    tavail = cexrt(0.5, ctmc(m), reward=:avail)
+    println(tavail)
+end
 
-# @testset "Markov8" begin
-#     @markov reliab(lam1, lam2) begin
-#         @tr :up => :down, lam1
-#         @tr :down => :up, lam2
-#         @init :up, 1.0
-#         @reward :avail :up, 1
-#     end
+@testset "Markov8" begin
+    @markov reliab(lam1, lam2) begin
+        @tr :up => :down, lam1
+        @tr :down => :up, lam2
+        @init :up, 1.0
+        @reward :avail :up, 1
+    end
 
-#     @bind begin
-#         lam1 = 1.0
-#         lam2 = 100.0
-#     end
+    @bind begin
+        lam1 = 1.0
+        lam2 = 100.0
+    end
 
-#     m = reliab(lam1, lam2)
-#     println(m)
+    m = reliab(lam1, lam2)
+    println(m)
 
-#     avail = exrss(ctmc(m), reward=:avail)
-#     println(avail)
+    avail = exrss(ctmc(m), reward=:avail)
+    println(avail)
     
-#     tavail = exrt(LinRange(0, 1, 10), ctmc(m), reward=:avail)
-#     println(tavail)
+    tavail = exrt(1.0, ctmc(m), reward=:avail)
+    println(tavail)
     
-#     a = seval(tavail)
-#     println(a)
-#     da1 = seval(tavail, :lam1)
-#     println(da1)
-#     da2 = seval(tavail, :lam2)
-#     println(da2)
-#     da12 = seval(tavail, (:lam1,:lam2))
-#     println(da12)
-# end
+    a = seval(tavail)
+    println(a)
+    da1 = seval(tavail, :lam1)
+    println(da1)
+    da2 = seval(tavail, :lam2)
+    println(da2)
+    da12 = seval(tavail, (:lam1,:lam2))
+    println(da12)
+end
 
 @testset "Markov9" begin
     e = @macroexpand @markov mm1k(lam,mu,k) begin

@@ -2,7 +2,7 @@ module SymbolicMarkov
 
 export Markov, trans!, reward!, initial!, generate, @tr, @reward, @init, @markov, @s
 export CTMCModel, ctmc, exrss, exrt, cexrt
-export prob
+export prob, tprob, ctprob
 
 using SymbolicDiff: AbstractSymbolic, AbstractVectorSymbolic, AbstractMatrixSymbolic, SymbolicEnv, SymbolicCache, SymbolicExpression, @expr, @bind, @vars
 import SymbolicDiff: _toexpr, _eval, seval
@@ -15,6 +15,8 @@ import LinearAlgebra: dot
 include("_markov.jl")
 include("_ctmc.jl")
 include("_ctmcprob.jl")
+
+include("_ctmcmexp.jl")
 
 # include("_ctmcst.jl")
 # include("_ctmctran.jl")
