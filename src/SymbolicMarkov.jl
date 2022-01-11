@@ -4,9 +4,9 @@ export Markov, trans!, reward!, initial!, generate, @tr, @reward, @init, @markov
 export CTMCModel, ctmc, exrss, exrt, cexrt
 export prob
 
-using SymbolicDiff: AbstractSymbolic, AbstractVectorSymbolic, SymbolicEnv, SymbolicCache, SymbolicExpression, @expr, @bind, @vars
+using SymbolicDiff: AbstractSymbolic, AbstractVectorSymbolic, AbstractMatrixSymbolic, SymbolicEnv, SymbolicCache, SymbolicExpression, @expr, @bind, @vars
 import SymbolicDiff: _toexpr, _eval, seval
-import NMarkov: gth, stsen, stgs, stsengs, tran
+import NMarkov: gth, stsen, stgs, stsengs, tran, mexp, mexpc
 using SparseArrays: SparseMatrixCSC, spzeros
 using SparseMatrix: SparseCSC, BlockCOO
 import Base
@@ -14,7 +14,10 @@ import LinearAlgebra: dot
 
 include("_markov.jl")
 include("_ctmc.jl")
-include("_ctmcst.jl")
-include("_ctmctran.jl")
+include("_ctmcprob.jl")
+
+# include("_ctmcst.jl")
+# include("_ctmctran.jl")
+# include("_ctmcmexp.jl")
 
 end

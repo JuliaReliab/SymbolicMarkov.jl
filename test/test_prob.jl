@@ -106,3 +106,4 @@ end
     println(seval(prob(m, states=[:up]), :lam))
     println(seval(prob(m, states=[:up]), (:lam, :lam)))
 end
+

@@ -4,10 +4,10 @@
         0 1 -1]
     v = @expr [1, 0, 0]
     
-    ma = gth(Q)
+    ma = prob(Q)
     
     x = 2.0
-    ex = gth(Float64[-x x 0; 1 -2 1; 0 1 -1])
+    ex = prob(Float64[-x x 0; 1 -2 1; 0 1 -1])
     @bind x = x
     res = seval(ma)
     @test isapprox(ex, res)
@@ -19,10 +19,10 @@ end
         0 1 -1]
     v = @expr [1, 0, 0]
     csc = SparseCSC(Q)
-    ma = stgs(csc)
+    ma = prob(csc)
     
     x = 2.0
-    ex = gth(Float64[-x x 0; 1 -2 1; 0 1 -1])
+    ex = prob(Float64[-x x 0; 1 -2 1; 0 1 -1])
     @bind x = x
     res = seval(ma)
     @test isapprox(ex, res)
@@ -34,10 +34,10 @@ end
         0 1 -1]
     v = @expr [1, 0, 0]
     
-    ma = dot(gth(Q), v)
-    # println(ma)
+    ma = dot(prob(Q), v)
+    println(ma)
     x = 2.0
-    ex = sum(gth(Float64[-x x 0; 1 -2 1; 0 1 -1]) .* [1,0,0])
+    ex = sum(prob(Float64[-x x 0; 1 -2 1; 0 1 -1]) .* [1,0,0])
     @bind x = x
     res = seval(ma)
     println(res, ex)
@@ -51,7 +51,7 @@ end
         0 1 -1]
     v = @expr [1, 0, 0]
     csc = SparseCSC(Q)
-    ma = stgs(csc)
+    ma = prob(csc)
     
     x0 = 2.0
     test = SymbolicEnv()
@@ -76,7 +76,7 @@ end
         0 1 -1]
     v = @expr [1, 0, 0]
     csc = SparseCSC(Q)
-    ma = dot(stgs(csc), v)
+    ma = dot(prob(csc), v)
     
     x0 = 2.0
     test = SymbolicEnv()
@@ -101,7 +101,7 @@ end
         0 1 -1]
     v = @expr [1, 0, 0]
     csc = SparseCSC(Q)
-    ma = stgs(csc)
+    ma = prob(csc)
 
     x0 = 2.0
     test = SymbolicEnv()
@@ -127,7 +127,7 @@ end
         0 1 -1]
     v = @expr [1, 0, 0]
     csc = SparseCSC(Q)
-    ma = dot(stgs(csc), v)
+    ma = dot(prob(csc), v)
 
     x0 = 2.0
     test = SymbolicEnv()
@@ -153,7 +153,7 @@ end
         0 1 -1]
     v = @expr [1, 0, 0]
     csc = Q
-    ma = dot(gth(csc), v)
+    ma = dot(prob(csc), v)
     
     x0 = 2.0
     test = SymbolicEnv()
