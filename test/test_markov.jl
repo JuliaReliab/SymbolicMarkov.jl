@@ -52,7 +52,7 @@ end
     println(Q)
     println(rwd)
 
-    avail = dot(prob(Q), rwd[:avail])
+    avail = dot(sprob(Q), rwd[:avail])
 
     @bind begin
         lam1 = 1.0
@@ -234,8 +234,34 @@ end
     end
 
     m = ctmc(midplane(lam, mu))
-    println(seval(prob(m.Q), lam))
+    println(seval(sprob(m.Q), lam))
     println(seval([lam, mu], delta))
-    println(seval(prob(m.Q), delta))
-    println(seval(prob(m.Q), (lam, delta)))
+    println(seval(sprob(m.Q), delta))
+    println(seval(sprob(m.Q), (lam, delta)))
+end
+
+@testset "m1" begin
+    @markov markov1(lamA, lamB) begin
+        @tr :AB  => :AX, lamB
+        @tr :AB => :XB, lamA
+        @tr :AX => :XX1, lamA
+        @tr :XB => :XX2, lamB
+        @init :AB, 1.0
+        @reward :failureA begin ### define the reward vector labeled by :faulreA
+            :XB,  1
+            :XX1, 1
+            :XX2, 1
+        end
+        @reward :failureAdash begin  ## define the reward vector labeled by :faulreAdash
+            :XX2,  1
+        end
+    end
+    @bind begin
+        lamA = 0.1
+        lamB = 0.5
+    end
+    m1 = ctmc(markov1(lamA, lamB))
+    ts = 10.0
+    fa = exrt(ts, m1, reward=:failureA)
+    display(fa)
 end

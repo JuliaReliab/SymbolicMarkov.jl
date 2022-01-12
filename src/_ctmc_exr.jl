@@ -3,7 +3,7 @@ exrss
 """
 
 function exrss(Q, r; maxiter=5000, steps=20, rtol=1.0e-6) where {Tv<:Number}
-    dot(prob(Q, maxiter=maxiter, steps=steps, rtol=rtol), r)
+    dot(sprob(Q, maxiter=maxiter, steps=steps, rtol=rtol), r)
 end
 
 function exrss(m::CTMCModel{Tv}; reward, maxiter=5000, steps=20, rtol=1.0e-6) where Tv

@@ -16,10 +16,10 @@
     end
 
     m = ctmc(midplane(lam, mu))
-    println(prob(m))
+    println(sprob(m))
 end
 
-@testset "prob2" begin
+@testset "sprob2" begin
     @markov midplane(lam, mu) begin
         @tr begin
             :up => :down, lam
@@ -37,10 +37,10 @@ end
     end
 
     m = ctmc(midplane(lam, mu), :DenseCTMC)
-    println(prob(m))
+    println(sprob(m))
 end
 
-@testset "prob2" begin
+@testset "sprob2" begin
     @markov midplane(lam, mu) begin
         @tr begin
             :up => :down, lam
@@ -58,10 +58,10 @@ end
     end
 
     m = ctmc(midplane(lam, mu), :DenseCTMC)
-    println(prob(m, states=[:up]))
+    println(sprob(m, states=[:up]))
 end
 
-@testset "prob4" begin
+@testset "sprob4" begin
     @markov midplane(lam, mu) begin
         @tr begin
             :up => :down, lam
@@ -79,12 +79,12 @@ end
     end
 
     m = ctmc(midplane(lam, mu), :DenseCTMC)
-    println(seval(prob(m)))
-    println(seval(prob(m), :lam))
-    println(seval(prob(m), (:lam, :lam)))
+    println(seval(sprob(m)))
+    println(seval(sprob(m), :lam))
+    println(seval(sprob(m), (:lam, :lam)))
 end
 
-@testset "prob5" begin
+@testset "sprob5" begin
     @markov midplane(lam, mu) begin
         @tr begin
             :up => :down, lam
@@ -102,8 +102,8 @@ end
     end
 
     m = ctmc(midplane(lam, mu), :DenseCTMC)
-    println(seval(prob(m, states=[:up])))
-    println(seval(prob(m, states=[:up]), :lam))
-    println(seval(prob(m, states=[:up]), (:lam, :lam)))
+    println(seval(sprob(m, states=[:up])))
+    println(seval(sprob(m, states=[:up]), :lam))
+    println(seval(sprob(m, states=[:up]), (:lam, :lam)))
 end
 
