@@ -219,6 +219,6 @@ function _replace_macro(x::Expr)
     end
 end
 
-macro s(x)
-    esc(Expr(:call, :Symbol, x))
+macro s(x...)
+    esc(Expr(:call, :Symbol, x...))
 end
