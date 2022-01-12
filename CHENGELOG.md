@@ -1,3 +1,8 @@
+# 0.7.6
+
+- refactor and add tprob
+- depend: SymbolicDiff 0.9.3
+
 # 0.7.5
 
 - add prob for stationary

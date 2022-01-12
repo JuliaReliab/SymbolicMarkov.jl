@@ -90,6 +90,10 @@ end
 
 ##
 
+function prob(Q::AbstractMatrixSymbolic{Tv}; maxiter=5000, steps=20, rtol=1.0e-6) where Tv
+    _prob(Q, maxiter, steps, rtol)
+end
+
 function _prob(Q::Matrix{<:AbstractSymbolic{Tv}}, maxiter, steps, rtol) where {Tv<:Number}
     _prob(convert(AbstractMatrixSymbolic{Tv}, Q), maxiter, steps, rtol)
 end
@@ -134,12 +138,3 @@ function _eval(::Val{:prob}, f::SymbolicCTMCProbExpression{Tv}, dvar::Tuple{Symb
 
     _probsen(Q, pis, dQ_ab' * pis + dQ_a' * dpis_b + dQ_b' * dpis_a, f.options[:maxiter], f.options[:steps], f.options[:rtol])
 end
-
-"""
-exrss
-"""
-
-function exrss(m::CTMCModel{Tv}; reward, maxiter=5000, steps=20, rtol=1.0e-6) where Tv
-    dot(prob(m, maxiter=maxiter, steps=steps, rtol=rtol), m.reward[reward])
-end
-

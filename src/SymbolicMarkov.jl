@@ -14,12 +14,9 @@ import LinearAlgebra: dot
 
 include("_markov.jl")
 include("_ctmc.jl")
-include("_ctmcprob.jl")
 
-include("_ctmcmexp.jl")
-
-# include("_ctmcst.jl")
-# include("_ctmctran.jl")
-# include("_ctmcmexp.jl")
+include("_ctmc_prob.jl")
+include("_ctmc_tprob.jl")
+include("_ctmc_exr.jl")
 
 end

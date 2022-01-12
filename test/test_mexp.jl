@@ -16,7 +16,7 @@
     end
 
     Q, x, _, states = generate(midplane(lam, mu))
-    println(tprob(1.0, x, Q))
+    println(tprob(1.0, Q, x))
 end
 
 @testset "mexp2" begin
@@ -37,7 +37,7 @@ end
     end
 
     Q, x, _, states = generate(midplane(lam, mu))
-    println(seval(tprob(1.0, x, Q)))
+    println(seval(tprob(1.0, Q, x)))
 end
 
 @testset "mexp3" begin
@@ -58,7 +58,7 @@ end
     end
 
     Q, x, _, states = generate(midplane(lam, mu))
-    println(seval(tprob(1.0, x, Q), :lam))
+    println(seval(tprob(1.0, Q, x), :lam))
 end
 
 @testset "mexp3" begin
@@ -81,10 +81,10 @@ end
     end
 
     Q, x, _, states = generate(midplane(lam, mu, p))
-    println(seval(tprob(1.0, x, Q), :p))
-    println(seval(tprob(1.0, x, Q), :lam))
-    println(seval(tprob(1.0, x, Q), (:lam, :p)))
-    println(seval(ctprob(100.0, x, Q), :p))
-    println(seval(ctprob(100.0, x, Q), :lam))
-    println(seval(ctprob(100.0, x, Q), (:lam, :p)))
+    println(seval(tprob(1.0, Q, x), :p))
+    println(seval(tprob(1.0, Q, x), :lam))
+    println(seval(tprob(1.0, Q, x), (:lam, :p)))
+    println(seval(ctprob(100.0, Q, x), :p))
+    println(seval(ctprob(100.0, Q, x), :lam))
+    println(seval(ctprob(100.0, Q, x), (:lam, :p)))
 end

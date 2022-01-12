@@ -117,39 +117,39 @@ end
     println(avail)
 end
 
-# @testset "Markov5" begin
-#     @markov reliab(lam1, lam2) begin
-#         @tr :up => :down, lam1
-#         @tr :down => :up, lam2
-#         @init :up, 1.0
-#         @reward :avail :up, 1
-#     end
-#     m = reliab(1, 100)
-#     println(m)
+@testset "Markov5" begin
+    @markov reliab(lam1, lam2) begin
+        @tr :up => :down, lam1
+        @tr :down => :up, lam2
+        @init :up, 1.0
+        @reward :avail :up, 1
+    end
+    m = reliab(1, 100)
+    println(m)
 
-#     avail = exrss(ctmc(m), reward=:avail)
-#     println(avail)
+    avail = exrss(ctmc(m), reward=:avail)
+    println(avail)
     
-#     tavail = exrt(LinRange(0, 1, 10), ctmc(m), reward=:avail)
-#     println(tavail)
-# end
+    tavail = exrt(LinRange(0, 1, 10), ctmc(m), reward=:avail)
+    println(tavail)
+end
 
-# @testset "Markov6" begin
-#     @markov reliab(lam1, lam2) begin
-#         @tr :up => :down, lam1
-#         @tr :down => :up, lam2
-#         @init :up, 1.0
-#         @reward :avail :up, 1
-#     end
-#     m = reliab(1, 100)
-#     println(m)
+@testset "Markov6" begin
+    @markov reliab(lam1, lam2) begin
+        @tr :up => :down, lam1
+        @tr :down => :up, lam2
+        @init :up, 1.0
+        @reward :avail :up, 1
+    end
+    m = reliab(1, 100)
+    println(m)
 
-#     avail = exrss(ctmc(m), reward=:avail)
-#     println(avail)
+    avail = exrss(ctmc(m), reward=:avail)
+    println(avail)
     
-#     tavail = cexrt(LinRange(0, 1, 10), ctmc(m), reward=:avail)
-#     println(tavail)
-# end
+    tavail = cexrt(LinRange(0, 1, 10), ctmc(m), reward=:avail)
+    println(tavail)
+end
 
 @testset "Markov7" begin
     @markov reliab(lam1, lam2) begin

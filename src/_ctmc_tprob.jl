@@ -2,11 +2,11 @@
 Transient Markov
 """
 
-function tprob(ts, x0::Vector{Tv}, Q::AbstractMatrix{Tv}; ufact=1.01, eps=1.0e-8, rmax=500) where Tv
+function tprob(ts::Tt, Q::AbstractMatrix{Tv}, x0::Vector{Tv}; ufact=1.01, eps=1.0e-8, rmax=500) where {Tv,Tt<:Number}
     _tprob(ts, x0, Q, ufact, eps, rmax)
 end
 
-function tprob(ts, m::CTMCModel{Tv}; states = nothing, ufact=1.01, eps=1.0e-8, rmax=500) where Tv
+function tprob(ts::Tt, m::CTMCModel{Tv}; states = nothing, ufact=1.01, eps=1.0e-8, rmax=500) where {Tv,Tt<:Number}
     if states == nothing
         _tprob(ts, m.initv, m.Q, ufact, eps, rmax)
     else
@@ -15,7 +15,7 @@ function tprob(ts, m::CTMCModel{Tv}; states = nothing, ufact=1.01, eps=1.0e-8, r
     end
 end
 
-function _tprob(ts::Tv, x0::Vector{Tv}, Q::AbstractMatrix{Tv}, ufact, eps, rmax)::Vector{Tv} where {Tv<:Number}
+function _tprob(ts::Tt, x0::Vector{Tv}, Q::AbstractMatrix{Tv}, ufact, eps, rmax)::Vector{Tv} where {Tv<:Number,Tt<:Number}
     mexp(Q, x0, ts, transpose=:T, ufact=ufact, eps=eps, rmax=rmax)
 end
 
@@ -23,11 +23,11 @@ end
 ctprob
 """
 
-function ctprob(ts, x0::Vector{Tv}, Q::AbstractMatrix{Tv}; ufact=1.01, eps=1.0e-8, rmax=500) where Tv
+function ctprob(ts::Tt, Q::AbstractMatrix{Tv}, x0::Vector{Tv}; ufact=1.01, eps=1.0e-8, rmax=500) where {Tv,Tt<:Number}
     _ctprob(ts, x0, Q, ufact, eps, rmax)
 end
 
-function ctprob(ts, m::CTMCModel{Tv}; states = nothing, ufact=1.01, eps=1.0e-8, rmax=500) where Tv
+function ctprob(ts::Tt, m::CTMCModel{Tv}; states = nothing, ufact=1.01, eps=1.0e-8, rmax=500) where {Tv,Tt<:Number}
     if states == nothing
         _ctprob(ts, m.initv, m.Q, ufact, eps, rmax)
     else
@@ -36,10 +36,9 @@ function ctprob(ts, m::CTMCModel{Tv}; states = nothing, ufact=1.01, eps=1.0e-8, 
     end
 end
 
-function _ctprob(ts::Tv, x0::Vector{Tv}, Q::AbstractMatrix{Tv}, ufact, eps, rmax)::Vector{Tv} where {Tv<:Number}
+function _ctprob(ts::Tt, x0::Vector{Tv}, Q::AbstractMatrix{Tv}, ufact, eps, rmax)::Vector{Tv} where {Tv<:Number,Tt<:Number}
     mexpc(Q, x0, ts, transpose=:T, ufact=ufact, eps=eps, rmax=rmax)[2]
 end
-
 
 """
 symbolic
@@ -65,20 +64,28 @@ end
 
 ###
 
-function _tprob(ts::Tv, x0::Vector{<:AbstractSymbolic{Tv}}, Q::AbstractMatrix{<:AbstractSymbolic{Tv}}, ufact, eps, rmax) where {Tv<:Number}
+function tprob(ts::Tt, Q::AbstractMatrixSymbolic{Tv}, x0::AbstractVectorSymbolic{Tv}; ufact=1.01, eps=1.0e-8, rmax=500) where {Tv<:Number,Tt<:Number}
+    _tprob(ts, x0, Q, ufact, eps, rmax)
+end
+
+function ctprob(ts::Tt, Q::AbstractMatrixSymbolic{Tv}, x0::AbstractVectorSymbolic{Tv}; ufact=1.01, eps=1.0e-8, rmax=500) where {Tv<:Number,Tt<:Number}
+    _ctprob(ts, x0, Q, ufact, eps, rmax)
+end
+
+function _tprob(ts::Tt, x0::Vector{<:AbstractSymbolic{Tv}}, Q::AbstractMatrix{<:AbstractSymbolic{Tv}}, ufact, eps, rmax) where {Tv<:Number,Tt<:Number}
     _tprob(ts, convert(AbstractVectorSymbolic{Tv}, x0), convert(AbstractMatrixSymbolic{Tv}, Q), ufact, eps, rmax)
 end
 
-function _tprob(ts::Tv, x0::AbstractVectorSymbolic{Tv}, Q::AbstractMatrixSymbolic{Tv}, ufact, eps, rmax) where {Tv<:Number}
+function _tprob(ts::Tt, x0::AbstractVectorSymbolic{Tv}, Q::AbstractMatrixSymbolic{Tv}, ufact, eps, rmax) where {Tv<:Number,Tt<:Number}
     s = union(x0.params, Q.params)
     SymbolicCTMCExpAvExpression{Tv}(s, :tprob, x0, Q, ts, Dict(:ufact=>ufact, :eps=>eps, :rmax=>rmax), Q.dim[1])
 end
 
-function _ctprob(ts::Tv, x0::Vector{<:AbstractSymbolic{Tv}}, Q::AbstractMatrix{<:AbstractSymbolic{Tv}}, ufact, eps, rmax) where {Tv<:Number}
+function _ctprob(ts::Tt, x0::Vector{<:AbstractSymbolic{Tv}}, Q::AbstractMatrix{<:AbstractSymbolic{Tv}}, ufact, eps, rmax) where {Tv<:Number,Tt<:Number}
     _ctprob(ts, convert(AbstractVectorSymbolic{Tv}, x0), convert(AbstractMatrixSymbolic{Tv}, Q), ufact, eps, rmax)
 end
 
-function _ctprob(ts::Tv, x0::AbstractVectorSymbolic{Tv}, Q::AbstractMatrixSymbolic{Tv}, ufact, eps, rmax) where {Tv<:Number}
+function _ctprob(ts::Tt, x0::AbstractVectorSymbolic{Tv}, Q::AbstractMatrixSymbolic{Tv}, ufact, eps, rmax) where {Tv<:Number,Tt<:Number}
     s = union(x0.params, Q.params)
     SymbolicCTMCExpAvExpression{Tv}(s, :ctprob, x0, Q, ts, Dict(:ufact=>ufact, :eps=>eps, :rmax=>rmax), Q.dim[1])
 end
@@ -174,16 +181,3 @@ function _eval(::Val{:ctprob}, f::SymbolicCTMCExpAvExpression{Tv}, dvar::Tuple{S
     ret = 3n+1:4n
     mexpc(QQ, xx, ts, transpose=:T, ufact=f.options[:ufact], eps=f.options[:eps], rmax=f.options[:rmax])[2][ret]
 end
-
-"""
-exrt, cexrt
-"""
-
-function exrt(ts, m::CTMCModel{Tv}; reward, ufact=1.01, eps=1.0e-8, rmax=500) where Tv
-    dot(tprob(ts, m, ufact=ufact, eps=eps, rmax=rmax), m.reward[reward])
-end
-
-function cexrt(ts, m::CTMCModel{Tv}; reward, ufact=1.01, eps=1.0e-8, rmax=500) where Tv
-    dot(ctprob(ts, m, ufact=ufact, eps=eps, rmax=rmax), m.reward[reward])
-end
-
