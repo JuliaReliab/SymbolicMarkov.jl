@@ -1,3 +1,7 @@
+# 0.7.7
+
+- use NMarkov 0.3.5
+
 # 0.7.6
 
 - refactor: change prob to sprob, and add tprob
